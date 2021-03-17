@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "outDir": "dist/",
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "target": "es5",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "module": "commonjs",
+        "importHelpers": true,
+        "jsx": "react",
+        "downlevelIteration": true
+    }
+}
