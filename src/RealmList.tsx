@@ -1,8 +1,7 @@
 import React from 'react'
 import { Table, Badge, Button, FormControl } from 'react-bootstrap'
-import RealmDefinition from './RealmDefinition'
-import TagsField from './TagsField3'
-import { Typeahead } from 'react-bootstrap-typeahead';
+import { Typeahead } from 'react-bootstrap-typeahead'
+import { RealmDefinition } from './service'
 
 type Props = {
     items:RealmDefinition[],

@@ -1,9 +1,14 @@
 import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button} from 'react-bootstrap'
 import RealmList from './RealmList'
-import RealmDefinition from './RealmDefinition'
-import { fetchRealms, pushRealms } from "./service"
-import { v4 as uuidv4 } from 'uuid';
+import { setupRealms, 
+    fetchRealms, 
+    pushRealms, 
+    fetchConfig, 
+    authenticate, 
+    RealmDefinition, 
+    Config } from "./service"
+import { v4 as uuidv4 } from 'uuid'
 
 const testCSV = require('./test.csv')
 
@@ -12,8 +17,7 @@ type Props = {
 }
 
 type State = {
-    items:RealmDefinition[],
-    filteredItems:RealmDefinition[]
+    items:RealmDefinition[]
 }
 
 export default class App extends React.Component<Props,State> {
@@ -21,19 +25,25 @@ export default class App extends React.Component<Props,State> {
         super(props);
 
         this.state = {
-            items: [],
-            filteredItems: []
+            items: []
         }
     }
 
     componentDidMount() {
         let component = this;
+        let config:Config = null;
 
-        fetchRealms(testCSV)
-            .then(realms => component.setState({
-                items: realms,
-                filteredItems: realms
-            }))
+        fetchConfig()
+        .then(v => config = v)
+        .then(() => authenticate({
+            identityPoolId: config.identityPool,
+            clientId: config.oauth.google.clientId
+        }))
+        .then(() => setupRealms(config.source))
+        .then(() => fetchRealms())
+        .then(realms => component.setState({
+            items: realms,
+        }))
     }
 
     handleSaveOnClick(e:React.MouseEvent) {
@@ -54,7 +64,6 @@ export default class App extends React.Component<Props,State> {
 
         this.setState({
             items: updatedItems,
-            filteredItems: updatedItems
         });
     }
 
@@ -62,13 +71,10 @@ export default class App extends React.Component<Props,State> {
         let updatedItems = this.state.items.filter(item => item.id != removedItem.id)
         this.setState({
             items: updatedItems,
-            filteredItems: updatedItems
         });
     }
 
-    handleItemChanged(changedItem:RealmDefinition) {
-        console.log("dsc")
-        
+    handleItemChanged(changedItem:RealmDefinition) {   
         let updated = this.state.items.map(item => {
             if(item.id == changedItem.id) {
                 console.log(changedItem)
@@ -80,8 +86,7 @@ export default class App extends React.Component<Props,State> {
         console.log(updated)
 
         this.setState({
-            items: updated,
-            filteredItems: updated
+            items: updated
         })
     }
 
@@ -108,7 +113,9 @@ export default class App extends React.Component<Props,State> {
         </Navbar.Collapse>
     </Navbar>
 
-    <RealmList items={ this.state.filteredItems } onItemRemoved={ this.handleItemRemoved.bind(this) } onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
+    <RealmList  items={ this.state.items }
+        onItemRemoved={ this.handleItemRemoved.bind(this) } 
+        onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
 </div>
     }
 }
