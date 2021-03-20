@@ -1,5 +1,5 @@
 import React from 'react';
-import {Navbar, Form, InputGroup, FormControl, Button} from 'react-bootstrap'
+import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
@@ -10,14 +10,13 @@ import { setupRealms,
     Config } from "./service"
 import { v4 as uuidv4 } from 'uuid'
 
-const testCSV = require('./test.csv')
-
 type Props = {
 
 }
 
 type State = {
-    items:RealmDefinition[]
+    items:RealmDefinition[],
+    filter:string
 }
 
 export default class App extends React.Component<Props,State> {
@@ -25,7 +24,8 @@ export default class App extends React.Component<Props,State> {
         super(props);
 
         this.state = {
-            items: []
+            items: [],
+            filter: ""
         }
     }
 
@@ -34,16 +34,20 @@ export default class App extends React.Component<Props,State> {
         let config:Config = null;
 
         fetchConfig()
-        .then(v => config = v)
-        .then(() => authenticate({
-            identityPoolId: config.identityPool,
-            clientId: config.oauth.google.clientId
-        }))
-        .then(() => setupRealms(config.source))
-        .then(() => fetchRealms())
-        .then(realms => component.setState({
-            items: realms,
-        }))
+            .then(v => config = v)
+            .then(() => {
+                if(config.cognito) {
+                    return authenticate(config.cognito)
+                        .then(creds => Promise.resolve())
+                } else {
+                    return Promise.resolve()
+                }
+            })
+            .then(() => setupRealms(config.source))
+            .then(() => fetchRealms())
+            .then(realms => component.setState({
+                items: realms,
+            }))
     }
 
     handleSaveOnClick(e:React.MouseEvent) {
@@ -90,6 +94,24 @@ export default class App extends React.Component<Props,State> {
         })
     }
 
+    handleFilterChanged(event:React.ChangeEvent<HTMLInputElement>) {
+        this.setState({
+            filter: event.target.value
+        })
+    }
+
+    matchFilter(filter:string, item:RealmDefinition) {
+        if(item.realm?.indexOf(filter) > -1) {
+            return true
+        }
+
+        if(item.tags.filter(t => t.indexOf(filter) > -1).length > 0) {
+            return true
+        }
+
+        return false
+    }
+
     render() {
         return <div>
     <Navbar className="bg-light justify-content-between">
@@ -98,22 +120,22 @@ export default class App extends React.Component<Props,State> {
         <Navbar.Collapse id="basic-navbar-nav">
             <Form inline className="mx-auto">
                 <InputGroup>
-                    <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1"/>
+                    <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ this.handleFilterChanged.bind(this) }/>
                     <InputGroup.Append>
                         <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
                     </InputGroup.Append>
                 </InputGroup>
             </Form>
             <Form inline>
-                <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
-            </Form>
-            <Form inline>
-                <Button onClick={ this.handleSaveOnClick.bind(this) }>Save</Button>
+                <ButtonGroup>
+                    <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
+                    <Button onClick={ this.handleSaveOnClick.bind(this) }>Save</Button>
+                </ButtonGroup>
             </Form>
         </Navbar.Collapse>
     </Navbar>
 
-    <RealmList  items={ this.state.items }
+    <RealmList  items={ this.state.items.filter(this.matchFilter.bind(this, this.state.filter)) }
         onItemRemoved={ this.handleItemRemoved.bind(this) } 
         onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
 </div>

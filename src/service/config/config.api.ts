@@ -1,4 +1,4 @@
-export {default as Config } from "./Config"
+export * from "./Config"
 
 export const fetchConfig = async() => {
     let response = await fetch("/config.json")

@@ -1,9 +1,12 @@
-export default interface Config {
-    identityPool:string
+import AWS from 'aws-sdk/global';
 
-    oauth:OAuthProviders
-
+export interface Config {
+    cognito?: CognitoOptions,
     source: AWSSource
+}
+export interface CognitoOptions {
+    identityPoolId:string,
+    clientId:string
 }
 
 interface OAuthProviders {
@@ -17,4 +20,5 @@ interface OAuthClient {
 type AWSSource = {
     bucket: string
     object: string
+    endpoint?: string
 }

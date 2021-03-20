@@ -1,15 +1,11 @@
 import AWS from 'aws-sdk/global';
-
-export interface Options {
-    identityPoolId:string,
-    clientId:string
-}
+import {CognitoOptions} from "../"
 
 type FragmentParams = { 
     [name: string]: string
 };
 
-export const authenticate = function(options:Options):Promise<AWS.Credentials> {
+export const authenticate = function(options:CognitoOptions):Promise<AWS.Credentials> {
     const fragmentString = window.location.hash.substring(1);
     let fragmentParams:FragmentParams = {}
 

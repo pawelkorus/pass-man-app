@@ -22,22 +22,12 @@ export interface RealmDefinition {
 
 type AWSSource = {
     bucket: string,
-    object: string
+    object: string,
+    endpoint?: string
 }
-
-/*export const fetchRealms = function(url:string):Promise<RealmDefinition[]> {
-    return fetch(url)
-        .then(response => response.text())
-        .then(textValue => Papa.parse<RealmDefinition>(textValue, { header: true, transform: transform }).data)
-}
-
-export const pushRealms = function(realms:RealmDefinition[]):Promise<RealmDefinition[]> {
-    console.log(realms);
-    return Promise.resolve(realms);
-}*/
 
 export const setupRealms = function(source:AWSSource) {
-    resolveBackend(new AWSBackend())
+    resolveBackend(new AWSBackend(source?.endpoint))
     resolveSource(source)
 }
 

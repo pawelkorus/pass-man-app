@@ -30,7 +30,8 @@
   "scripts": {
     "build-prod": "webpack --config webpack.prod.js",
     "build-debug": "webpack --config webpack.dev.js",
-    "develop": "webpack serve --https --config webpack.dev.js"
+    "develop-dev": "webpack serve --https --config webpack.dev.js",
+    "develop-local": "webpack serve --https --config webpack.local.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.2",

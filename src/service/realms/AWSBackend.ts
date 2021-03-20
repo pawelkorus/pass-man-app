@@ -1,16 +1,22 @@
 import S3 from 'aws-sdk/clients/s3';
-import { resolve } from 'dns';
+import AWS from 'aws-sdk/global';
 
 export default class AWSBackend {
 
     private client:S3;
 
-    constructor() {
-        this.client = new S3();
+    constructor(endpoint?:string) {
+        this.client = new S3({
+            endpoint: new AWS.Endpoint(endpoint),
+            credentials: {
+                accessKeyId: "minioadmin",
+                secretAccessKey: "minioadmin"
+            },
+            s3ForcePathStyle: true
+        });
     }
 
     fetchResource(bucketName: string, sourcePath: string, encode?: string): Promise<string> {
-        let client = new S3()
         sourcePath = sourcePath.startsWith('/')? sourcePath.substring(1) : sourcePath;
 
         return new Promise((resolve, reject) => {
@@ -19,7 +25,7 @@ export default class AWSBackend {
                 Key: sourcePath
             }
 
-            client.getObject(request, function(err, output) {
+            this.client.getObject(request, function(err, output) {
                 if(err) {
                     return reject(err);
                 }
