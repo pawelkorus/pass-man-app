@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Badge, Button, FormControl, ButtonToolbar } from 'react-bootstrap'
+import { Table, Badge, Button, FormControl, ButtonToolbar, Container, Row, Col } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import { RealmDefinition } from './service'
 import RealmListItem from './RealmListItem'
@@ -68,17 +68,15 @@ export default class CredentialsList extends React.Component<Props, State> {
     }
 
     render() {
-        return <Table>
-            <tbody>
-                { this.props.items.map(item => 
-                <RealmListItem
-                    key={item.id}
-                    item={item}
-                    allTags={this.state.allTags}
-                    >
-                </RealmListItem>) }
-            </tbody>
-        </Table>
+        return <Container>
+    { this.props.items.map(item => 
+    <RealmListItem
+        key={item.id}
+        item={item}
+        allTags={this.state.allTags}
+        >
+    </RealmListItem>) }
+</Container>
     }
 }
 

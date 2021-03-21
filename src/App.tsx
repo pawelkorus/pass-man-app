@@ -1,5 +1,5 @@
 import React from 'react';
-import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup} from 'react-bootstrap'
+import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
@@ -113,12 +113,14 @@ export default class App extends React.Component<Props,State> {
 
     render() {
         return <div>
-    <Navbar className="bg-light justify-content-between">
+    <Navbar expand="md" className="bg-light justify-content-between">
         <Navbar.Brand href="#">pass-man</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-            <Form inline className="mx-auto">
-                <InputGroup>
+            <Nav>
+            </Nav>
+            <Form inline className="flex-grow-1">
+                <InputGroup className="mx-auto w-75">
                     <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ this.handleFilterChanged.bind(this) }/>
                     <InputGroup.Append>
                         <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
@@ -128,7 +130,7 @@ export default class App extends React.Component<Props,State> {
             <Form inline>
                 <ButtonGroup>
                     <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
-                    <Button onClick={ this.handleSaveOnClick.bind(this) }>Save</Button>
+                    <Button onClick={ this.handleSaveOnClick.bind(this) }><i className="fas fa-cloud-upload-alt"></i></Button>
                 </ButtonGroup>
             </Form>
         </Navbar.Collapse>
