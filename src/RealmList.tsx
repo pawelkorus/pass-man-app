@@ -1,6 +1,5 @@
 import React from 'react'
-import { Table, Badge, Button, FormControl, ButtonToolbar, Container, Row, Col } from 'react-bootstrap'
-import { Typeahead } from 'react-bootstrap-typeahead'
+import { Container } from 'react-bootstrap'
 import { RealmDefinition } from './service'
 import RealmListItem from './RealmListItem'
 
@@ -26,29 +25,6 @@ export default class CredentialsList extends React.Component<Props, State> {
         this.state = {
             allTags: []
         }
-    }
-
-    handleOnInputClick(e:React.MouseEvent<HTMLInputElement>) {
-        e.preventDefault();
-        (e.target as HTMLInputElement).readOnly = false;
-    }
-
-    handleOnInputFocusLost(field: keyof RealmDefinition, item:RealmDefinition, e:React.FocusEvent<HTMLInputElement>) {
-        e.preventDefault();
-        e.target.readOnly = true;
-        
-        let newValue = e.target.value;
-        if(field == 'tags') {
-            return    
-        } else {
-            item[field] = newValue;
-        }
-        if(this.props.onItemChanged) this.props.onItemChanged(item);
-    }
-
-    handleTagsChanged(item:RealmDefinition, items:Tag[]) {
-        item.tags = items.map(obj => obj.value)
-        if(this.props.onItemChanged) this.props.onItemChanged(item)
     }
 
     caclulateAllTags(items:RealmDefinition[]):Tag[] {
@@ -79,9 +55,3 @@ export default class CredentialsList extends React.Component<Props, State> {
 </Container>
     }
 }
-
-/*
-<TagsField
-onNewItem={ this.handleNewTag.bind(this, item) }
-onRemoveItem={ this.handleRemoveTag.bind(this, item) }
-items={item.tags}></TagsField>*/
