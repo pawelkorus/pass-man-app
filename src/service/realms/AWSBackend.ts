@@ -26,11 +26,13 @@ export default class AWSBackend {
             }
 
             this.client.getObject(request, function(err, output) {
-                if(err) {
+                if(err && err.code == "NoSuchKey") {
+                    return resolve("")
+                } else if(err) {
                     return reject(err);
+                } else {
+                    return resolve(output.Body.toString());
                 }
-
-                return resolve(output.Body.toString());
             });
         })
     }
