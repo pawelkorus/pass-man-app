@@ -26,17 +26,7 @@ module.exports = {
                   loader: 'style-loader', // inject CSS to page
                 }, {
                   loader: 'css-loader', // translates CSS into CommonJS modules
-                }/*, {
-                  loader: 'postcss-loader', // Run post css actions
-                  options: {
-                    postcssOptions: {
-                      plugins: [
-                        'precss',
-                        'autoprefixer'
-                      ]
-                    }
-                  }
-                }*/, {
+                }, {
                   loader: 'sass-loader' // compiles Sass to CSS
                 }]
             },
@@ -66,10 +56,6 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        /*new webpack.ProvidePlugin({
-          $: 'jquery',
-          jQuery: 'jquery'
-        }),*/
         new HtmlWebpackPlugin({
           inlineSource: '.(js|css)$', // embed all javascript and css inline
           template: 'src/index.html'
