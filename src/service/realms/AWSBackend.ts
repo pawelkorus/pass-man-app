@@ -1,19 +1,25 @@
 import S3 from 'aws-sdk/clients/s3';
 import AWS from 'aws-sdk/global';
+import { AWSSource } from '../../config';
 
 export default class AWSBackend {
 
     private client:S3;
 
-    constructor(endpoint?:string) {
-        this.client = new S3({
-            endpoint: new AWS.Endpoint(endpoint),
-            credentials: {
-                accessKeyId: "minioadmin",
-                secretAccessKey: "minioadmin"
-            },
-            s3ForcePathStyle: true
-        });
+    constructor(awsSource:AWSSource) {
+        if(awsSource.endpoint && awsSource.credentials) {
+            this.client = new S3({
+                endpoint: new AWS.Endpoint(awsSource.endpoint),
+                credentials: {
+                    accessKeyId: awsSource.credentials.clientId,
+                    secretAccessKey: awsSource.credentials.clientSecret
+                },
+                s3ForcePathStyle: true
+            });
+        } else {
+            this.client = new S3()
+        }
+        
     }
 
     fetchResource(bucketName: string, sourcePath: string, encode?: string): Promise<string> {

@@ -1,7 +1,8 @@
 import React from 'react'
-import { Table, Badge, Button, FormControl } from 'react-bootstrap'
+import { Table, Badge, Button, FormControl, ButtonToolbar } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import { RealmDefinition } from './service'
+import RealmListItem from './RealmListItem'
 
 type Props = {
     items:RealmDefinition[],
@@ -70,40 +71,12 @@ export default class CredentialsList extends React.Component<Props, State> {
         return <Table>
             <tbody>
                 { this.props.items.map(item => 
-                <tr key={item.id}>
-                    <td><FormControl 
-                        readOnly={true}
-                        defaultValue={item.realm} 
-                        onBlur={ this.handleOnInputFocusLost.bind(this, "realm", item) }
-                        onClick={ this.handleOnInputClick.bind(this) }/></td>
-                    <td><FormControl 
-                        readOnly={true} 
-                        defaultValue={item.username} 
-                        onBlur={ this.handleOnInputFocusLost.bind(this, "username", item) }
-                        onClick={ this.handleOnInputClick.bind(this) }/></td>
-                    <td><FormControl 
-                        readOnly={true}
-                        defaultValue={item.password} 
-                        onBlur={ this.handleOnInputFocusLost.bind(this, "password", item) }
-                        onClick={ this.handleOnInputClick.bind(this) }/></td>
-                    <td>
-                        <Typeahead
-                            id={"tags-field-" + item.id}
-                            labelKey="value"
-                            multiple
-                            defaultSelected={item.tags.map(v => { return {value: v}})}
-                            options={this.state.allTags}
-                            placeholder="Add tag"
-                            allowNew
-                            onChange={this.handleTagsChanged.bind(this, item)}
-                        />
-                    </td>
-                    <td>
-                        <Button variant="danger" onClick={e => { if(this.props.onItemRemoved) this.props.onItemRemoved(item); } }>
-                            <i className="fas fa-trash-alt"></i>
-                        </Button>
-                    </td>
-                </tr>) }
+                <RealmListItem
+                    key={item.id}
+                    item={item}
+                    allTags={this.state.allTags}
+                    >
+                </RealmListItem>) }
             </tbody>
         </Table>
     }

@@ -4,10 +4,9 @@ import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
     pushRealms, 
-    fetchConfig, 
     authenticate, 
-    RealmDefinition, 
-    Config } from "./service"
+    RealmDefinition } from "./service"
+import { Config, fetchConfig } from "./config"
 import { v4 as uuidv4 } from 'uuid'
 
 type Props = {

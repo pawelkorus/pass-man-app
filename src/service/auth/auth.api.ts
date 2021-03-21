@@ -1,5 +1,5 @@
 import AWS from 'aws-sdk/global';
-import {CognitoOptions} from "../"
+import { CognitoOptions } from "../../config"
 
 type FragmentParams = { 
     [name: string]: string
