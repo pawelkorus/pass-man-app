@@ -1,5 +1,5 @@
 import React from 'react';
-import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav} from 'react-bootstrap'
+import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Container, Row, Spinner} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
@@ -15,7 +15,8 @@ type Props = {
 
 type State = {
     items:RealmDefinition[],
-    filter:string
+    filter:string,
+    loading:boolean
 }
 
 export default class App extends React.Component<Props,State> {
@@ -24,7 +25,8 @@ export default class App extends React.Component<Props,State> {
 
         this.state = {
             items: [],
-            filter: ""
+            filter: "",
+            loading: true
         }
     }
 
@@ -46,6 +48,9 @@ export default class App extends React.Component<Props,State> {
             .then(() => fetchRealms())
             .then(realms => component.setState({
                 items: realms,
+            }))
+            .then(() => this.setState({
+                loading: false
             }))
     }
 
@@ -86,8 +91,6 @@ export default class App extends React.Component<Props,State> {
             return item;
         })
 
-        console.log(updated)
-
         this.setState({
             items: updated
         })
@@ -112,7 +115,7 @@ export default class App extends React.Component<Props,State> {
     }
 
     render() {
-        return <div>
+        return <div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between">
         <Navbar.Brand href="#">pass-man</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -136,9 +139,18 @@ export default class App extends React.Component<Props,State> {
         </Navbar.Collapse>
     </Navbar>
 
-    <RealmList  items={ this.state.items.filter(this.matchFilter.bind(this, this.state.filter)) }
-        onItemRemoved={ this.handleItemRemoved.bind(this) } 
-        onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
+    <div className="row flex-fill">
+    {this.state.loading?
+        <div className="mx-auto my-auto">
+            <Spinner animation="border" role="status">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+        </div>
+        : <RealmList    items={ this.state.items.filter(this.matchFilter.bind(this, this.state.filter)) }
+                        onItemRemoved={ this.handleItemRemoved.bind(this) } 
+                        onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
+    }
+    </div>
 </div>
     }
 }
