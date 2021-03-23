@@ -50,6 +50,7 @@ export default class CredentialsList extends React.Component<Props, State> {
         key={item.id}
         item={item}
         allTags={this.state.allTags}
+        onItemRemoved={this.props?.onItemRemoved}
         >
     </RealmListItem>) }
 </Container>

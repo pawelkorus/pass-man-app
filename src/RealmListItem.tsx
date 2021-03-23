@@ -99,7 +99,7 @@ export default class RealmListItem extends React.Component<Props, State> {
                 <Button onClick={e => { this.handleSaveItem(this.props.item) }}><i className="fas fa-save"></i></Button>
                 : <Button onClick={e => { this.setState({ editEnabled: true })}}><i className="fas fa-edit"></i></Button>
             }
-            <Button variant="danger" onClick={e => { if(this.props.onItemRemoved) this.props.onItemRemoved(this.props.item); } }>
+            <Button variant="danger" onClick={e => { this.props?.onItemRemoved(this.props.item); } }>
                 <i className="fas fa-trash-alt"></i>
             </Button>
         </ButtonGroup>
