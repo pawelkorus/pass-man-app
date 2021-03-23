@@ -28,19 +28,6 @@ export default class RealmListItem extends React.Component<Props, State> {
             editEnabled: false
         }
     }
-    
-    handleOnInputFocusLost(field: keyof RealmDefinition, item:RealmDefinition, e:React.FocusEvent<HTMLInputElement>) {
-        e.preventDefault();
-        e.target.readOnly = true;
-        
-        let newValue = e.target.value;
-        if(field == 'tags') {
-            return    
-        } else {
-            item[field] = newValue;
-        }
-        if(this.props.onItemChanged) this.props.onItemChanged(item);
-    }
 
     handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string) {
         if(field == 'tags') {
