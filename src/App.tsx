@@ -132,7 +132,7 @@ export default class App extends React.Component<Props,State> {
 
     render() {
         return <div className="container-fluid h-100 d-flex flex-column">
-    <Navbar expand="md" className="bg-light justify-content-between">
+    <Navbar expand="md" className="bg-light justify-content-between" fixed="top">
         <Navbar.Brand href="#">pass-man</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
