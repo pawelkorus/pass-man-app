@@ -5,7 +5,7 @@ import { RealmDefinition } from './service'
 
 type Props = {
     item: RealmDefinition
-    allTags: Tag[]
+    allTags: string[]
 
     onItemChanged?:(item:RealmDefinition) => void,
     onItemRemoved?:(item:RealmDefinition) => void
@@ -82,13 +82,13 @@ export default class RealmListItem extends React.Component<Props, State> {
             labelKey="value"
             multiple
             defaultSelected={this.props.item.tags.map(v => { return {value: v}})}
-            options={this.props.allTags}
+            options={this.props.allTags.map(v => { return {value: v}})}
             placeholder="Add tag"
             allowNew
             onChange={this.handleTagsChanged.bind(this, this.props.item)}
         />
         : <div>
-            {this.props.item.tags.map(t => <Badge className="mx-1" variant="info">{t}</Badge>)
+            {this.props.item.tags.map(t => <Badge key={t} className="mx-1" variant="info">{t}</Badge>)
             }
         </div>
     }

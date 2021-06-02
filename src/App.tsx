@@ -15,6 +15,7 @@ type Props = {
 
 type State = {
     items:RealmDefinition[],
+    tags:string[],
     filter:string,
     loading:boolean
 }
@@ -25,6 +26,7 @@ export default class App extends React.Component<Props,State> {
 
         this.state = {
             items: [],
+            tags: [],
             filter: "",
             loading: true
         }
@@ -48,6 +50,7 @@ export default class App extends React.Component<Props,State> {
             .then(() => fetchRealms())
             .then(realms => component.setState({
                 items: realms,
+                tags: component.caclulateAllTags(realms)
             }))
             .then(() => this.setState({
                 loading: false
@@ -77,8 +80,10 @@ export default class App extends React.Component<Props,State> {
 
     handleItemRemoved(removedItem:RealmDefinition) {
         let updatedItems = this.state.items.filter(item => item.id != removedItem.id)
+        let tags = this.caclulateAllTags(updatedItems)
         this.setState({
             items: updatedItems,
+            tags: tags
         });
     }
 
@@ -91,8 +96,11 @@ export default class App extends React.Component<Props,State> {
             return item;
         })
 
+        let tags = this.caclulateAllTags(updated)
+
         this.setState({
-            items: updated
+            items: updated,
+            tags: tags
         })
     }
 
@@ -112,6 +120,14 @@ export default class App extends React.Component<Props,State> {
         }
 
         return false
+    }
+
+    caclulateAllTags(items:RealmDefinition[]):string[] {
+        let uniqueTags = items.map(item => item.tags)
+            .reduce((accumulator, value) => accumulator.concat(value), [])
+            .reduce((accumulator, value) => accumulator.add(value), new Set<string>())
+
+        return [...uniqueTags]
     }
 
     render() {
@@ -147,6 +163,7 @@ export default class App extends React.Component<Props,State> {
             </Spinner>
         </div>
         : <RealmList    items={ this.state.items.filter(this.matchFilter.bind(this, this.state.filter)) }
+                        tags={this.state.tags}
                         onItemRemoved={ this.handleItemRemoved.bind(this) } 
                         onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
     }
