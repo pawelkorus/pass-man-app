@@ -133,26 +133,28 @@ export default class App extends React.Component<Props,State> {
     render() {
         return <div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between" fixed="top">
-        <Navbar.Brand href="#">pass-man</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-            <Nav>
-            </Nav>
-            <Form inline className="flex-grow-1">
-                <InputGroup className="mx-auto w-75">
-                    <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ this.handleFilterChanged.bind(this) }/>
-                    <InputGroup.Append>
-                        <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
-                    </InputGroup.Append>
-                </InputGroup>
-            </Form>
-            <Form inline>
-                <ButtonGroup>
-                    <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
-                    <Button onClick={ this.handleSaveOnClick.bind(this) }><i className="fas fa-cloud-upload-alt"></i></Button>
-                </ButtonGroup>
-            </Form>
-        </Navbar.Collapse>
+        <div className="container">
+            <Navbar.Brand href="#">pass-man</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+                <Nav>
+                </Nav>
+                <Form inline className="flex-grow-1">
+                    <InputGroup className="mx-auto w-75">
+                        <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ this.handleFilterChanged.bind(this) }/>
+                        <InputGroup.Append>
+                            <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
+                        </InputGroup.Append>
+                    </InputGroup>
+                </Form>
+                <Form inline>
+                    <ButtonGroup>
+                        <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
+                        <Button onClick={ this.handleSaveOnClick.bind(this) }><i className="fas fa-cloud-upload-alt"></i></Button>
+                    </ButtonGroup>
+                </Form>
+            </Navbar.Collapse>
+        </div>
     </Navbar>
 
     <div className="row flex-fill">
