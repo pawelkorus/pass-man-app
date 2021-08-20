@@ -4,7 +4,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    entry: './src/index.tsx',
+    entry: {
+      'index': './src/index.tsx',
+      'login': './src/login.tsx'
+    },
     module: {
         rules: [
             {
@@ -51,14 +54,22 @@ module.exports = {
         extensions: [ '.tsx', '.ts', '.js', '.scss' ]
     },
     output: {
-        filename: 'bundle.js',
+        filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'target')
     },
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           inlineSource: '.(js|css)$', // embed all javascript and css inline
-          template: 'src/index.html'
+          chunks: ['index'],
+          template: 'src/index.html',
+          filename: 'index.html'
+        }),
+        new HtmlWebpackPlugin({
+          inlineSource: '.(js|css)$', // embed all javascript and css inline
+          template: 'src/index.html',
+          chunks: ['login'],
+          filename: 'login.html'
         })
     ]
 };
