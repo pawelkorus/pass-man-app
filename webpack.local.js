@@ -7,6 +7,6 @@ module.exports = merge(common, {
     devtool: 'inline-source-map',
     devServer: {
       host: '0.0.0.0',
-      contentBase: [path.resolve(__dirname, 'target'), path.resolve(__dirname, 'config-local')]
+      contentBase: [path.resolve(__dirname, 'target'), path.resolve(__dirname, '.config-local')]
     }
 });
