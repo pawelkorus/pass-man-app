@@ -18,22 +18,6 @@ export default class CredentialsList extends React.Component<Props, State> {
         super(props);
     }
 
-    // caclulateAllTags(items:RealmDefinition[]):Tag[] {
-    //     let uniqueTags = items.map(item => item.tags)
-    //         .reduce((accumulator, value) => accumulator.concat(value), [])
-    //         .reduce((accumulator, value) => accumulator.add(value), new Set<string>())
-            
-    //     return [...uniqueTags].map(t => { return { value: t } })
-    // }
-
-    // componentDidUpdate(prevProps:Props) {
-    //     if(prevProps.items != this.props.items) {
-    //         this.setState({
-    //             allTags: this.caclulateAllTags(this.props.items)
-    //         })
-    //     }
-    // }
-
     render() {
         return <Container>
     { this.props.items.map(item => 
