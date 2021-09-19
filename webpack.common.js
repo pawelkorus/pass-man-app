@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -51,7 +50,16 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: [ '.tsx', '.ts', '.js', '.scss' ]
+        extensions: [ '.tsx', '.ts', '.js', '.scss' ],
+        fallback: {
+          'http': false,
+          'crypto': false,
+          'fs': false,
+          'path': false,
+          'os': false,
+          'stream': false,
+          'buffer': false
+        }
     },
     output: {
         filename: '[name].bundle.js',

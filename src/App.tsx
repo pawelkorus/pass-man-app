@@ -4,10 +4,12 @@ import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
     pushRealms, 
-    authenticate, 
-    RealmDefinition } from "./service"
+    authenticateCognito, 
+    RealmDefinition, 
+    authenticateClientIdClientSecret} from "./service"
 import { Config, fetchConfig } from "./config"
 import { v4 as uuidv4 } from 'uuid'
+import { Credentials, Provider } from "@aws-sdk/types";
 
 type Props = {
 
@@ -32,29 +34,24 @@ export default class App extends React.Component<Props,State> {
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let component = this;
-        let config:Config = null;
 
-        fetchConfig()
-            .then(v => config = v)
-            .then(() => {
-                if(config.cognito) {
-                    return authenticate(config.cognito)
-                        .then(creds => Promise.resolve())
-                } else {
-                    return Promise.resolve()
-                }
-            })
-            .then(() => setupRealms(config.source))
-            .then(() => fetchRealms())
-            .then(realms => component.setState({
-                items: realms,
-                tags: component.caclulateAllTags(realms)
-            }))
-            .then(() => this.setState({
-                loading: false
-            }))
+        let config:Config = await fetchConfig()
+        let auth:Provider<Credentials> = null
+        if(config.cognito) {
+            auth = await authenticateCognito(config.cognito)  
+        } else {
+            auth = await authenticateClientIdClientSecret(config.clientIdSecret)
+        }
+        //let auth = await authenticate(config.cognito)
+        await setupRealms(config.source, auth)
+        let realms = await fetchRealms()
+        component.setState({
+            items: realms,
+            tags: component.caclulateAllTags(realms),
+            loading: false
+        })
     }
 
     handleSaveOnClick(e:React.MouseEvent) {

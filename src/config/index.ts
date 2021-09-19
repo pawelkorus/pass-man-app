@@ -1,10 +1,11 @@
-export const fetchConfig = async() => {
+export const fetchConfig = async():Promise<Config> => {
     let response = await fetch("/config.json")
     return response.json()
 }
 
 export interface Config {
     cognito?: CognitoOptions,
+    clientIdSecret?: Credentials,
     source: AWSSource
 }
 export interface CognitoOptions {
@@ -24,7 +25,7 @@ export type AWSSource = {
     bucket: string
     object: string
     endpoint?: string
-    credentials?: Credentials
+    region?:string
 }
 
 export type Credentials = {

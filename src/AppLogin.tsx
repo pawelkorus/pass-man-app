@@ -1,6 +1,6 @@
 import React from 'react';
-import { authenticate } from "./service"
-import { Config, fetchConfig } from "./config"
+import { authenticateCognito } from "./service"
+import { fetchConfig } from "./config"
 import { Spinner } from 'react-bootstrap'
 
 type Props = {
@@ -17,19 +17,12 @@ export default class AppLogin extends React.Component<Props,State> {
         }
     }
 
-    componentDidMount() {
-        let config:Config = null;
+    async componentDidMount() {
+        let config = await fetchConfig()
 
-        fetchConfig()
-            .then(v => config = v)
-            .then(() => {
-                if(config.cognito) {
-                    return authenticate(config.cognito)
-                        .then(creds => Promise.resolve())
-                } else {
-                    return Promise.resolve()
-                }
-            })
+        if(config.cognito) {
+            await authenticateCognito(config.cognito)
+        }
     }
 
     render() {

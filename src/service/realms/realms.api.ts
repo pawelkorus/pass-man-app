@@ -1,6 +1,7 @@
 import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
 import { AWSSource } from "../../config"
+import { Credentials, Provider } from "@aws-sdk/types";
 
 let resolveBackend:Function
 let resolveSource:Function
@@ -21,8 +22,8 @@ export interface RealmDefinition {
     id: string
 }
 
-export const setupRealms = function(source:AWSSource) {
-    resolveBackend(new AWSBackend(source))
+export const setupRealms = function(source:AWSSource, credentials:Provider<Credentials>) {
+    resolveBackend(new AWSBackend(source, credentials))
     resolveSource(source)
 }
 

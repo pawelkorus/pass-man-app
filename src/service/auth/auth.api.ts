@@ -1,11 +1,26 @@
-import AWS from 'aws-sdk/global';
-import { CognitoOptions } from "../../config"
+//import AWS from 'aws-sdk/global';
+import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
+import { Credentials, Provider } from "@aws-sdk/types";
+import { CognitoOptions, Credentials as Creds } from "../../config"
 
 type FragmentParams = { 
     [name: string]: string
 };
 
-export const authenticate = function(options:CognitoOptions):Promise<AWS.Credentials> {
+export async function authenticateClientIdClientSecret(credentials:Creds):Promise<Provider<Credentials>> {  
+    const prov:Provider<Credentials> = () => new Promise<Credentials>((resolve, reject) => {
+                resolve({
+                    accessKeyId: credentials.clientId,
+                    secretAccessKey: credentials.clientSecret
+                })
+            })
+    
+    return new Promise((resolve, reject) => {
+        resolve(prov)
+    })
+}
+
+export const authenticateCognito = function(options:CognitoOptions):Promise<Provider<Credentials>> {
     const fragmentString = window.location.hash.substring(1);
     let fragmentParams:FragmentParams = {}
 
@@ -18,23 +33,19 @@ export const authenticate = function(options:CognitoOptions):Promise<AWS.Credent
 
     if(fragmentParams["id_token"] && fragmentParams["state"] == preservedState) {
     
-        // Configure the credentials provider to use your identity pool
-        let credentials = new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: options.identityPoolId,
-            Logins: { // optional tokens, used for authenticated login
+        window.location.hash = "";
+        return Promise.resolve(fromCognitoIdentityPool({
+            identityPoolId: options.identityPoolId,
+            logins: { // optional tokens, used for authenticated login
                 // 'graph.facebook.com': 'FBTOKEN',
                 // 'www.amazon.com': 'AMAZONTOKEN',
                 'accounts.google.com': fragmentParams['id_token']
+            },
+            clientConfig: {
+                region: 'eu-central-1'
             }
-        })
-        AWS.config.update({
-            region: "eu-central-1",
-            credentials: credentials
-        })
-    
-        window.location.hash = "";
-        return Promise.resolve(credentials)
-    
+        }))
+
     } else {
         
         let state = secureRandomString();

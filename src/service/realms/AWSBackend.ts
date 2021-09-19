@@ -1,64 +1,69 @@
-import S3 from 'aws-sdk/clients/s3';
-import AWS from 'aws-sdk/global';
-import { AWSSource } from '../../config';
+import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
+import { hostHeaderMiddlewareOptions } from "@aws-sdk/middleware-host-header"
+import { HttpRequest } from "@aws-sdk/protocol-http";
+import { Credentials, Provider } from "@aws-sdk/types"
+import { AWSSource } from '../../config'
 
 export default class AWSBackend {
 
-    private client:S3;
+    private client:S3Client;
 
-    constructor(awsSource:AWSSource) {
-        if(awsSource.endpoint && awsSource.credentials) {
-            this.client = new S3({
-                endpoint: new AWS.Endpoint(awsSource.endpoint),
-                credentials: {
-                    accessKeyId: awsSource.credentials.clientId,
-                    secretAccessKey: awsSource.credentials.clientSecret
-                },
-                s3ForcePathStyle: true
-            });
-        } else {
-            this.client = new S3()
-        }
-        
+    constructor(awsSource:AWSSource, credentials?:Provider<Credentials>) {
+        this.client = new S3Client({
+            endpoint: awsSource.endpoint,
+            credentials: credentials,
+            forcePathStyle: awsSource.endpoint? true : false,
+            region: awsSource.region
+        });
+
+        this.client.middlewareStack.addRelativeTo((next:any, ctx:any) => (args:any) => {
+            if (!HttpRequest.isInstance(args.request)) return next(args);
+            const { request } = args
+            const { headers, port } = request
+            if(headers['host']) {
+               headers['host'] = headers['host'] + (port?  ':' + port : '')
+            }
+            return next(args);
+        }, {
+            relation: 'after',
+            toMiddleware: hostHeaderMiddlewareOptions.name
+        })   
     }
 
-    fetchResource(bucketName: string, sourcePath: string, encode?: string): Promise<string> {
+    async fetchResource(bucketName: string, sourcePath: string, encode?: string): Promise<string> {
         sourcePath = sourcePath.startsWith('/')? sourcePath.substring(1) : sourcePath;
 
-        return new Promise((resolve, reject) => {
-            let request:S3.GetObjectRequest = {
-                Bucket: bucketName,
-                Key: sourcePath
-            }
-
-            this.client.getObject(request, function(err, output) {
-                if(err && err.code == "NoSuchKey") {
-                    return resolve("")
-                } else if(err) {
-                    return reject(err);
-                } else {
-                    return resolve(output.Body.toString());
-                }
-            });
+        let request:GetObjectCommand = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: sourcePath
         })
-    }
-
-    storeResource(bucketName:string, targetPath:string, content:string) :Promise<string> {
-        return new Promise((resolve, reject) => {
-            let request:S3.PutObjectRequest = {
-                Body: content,
-                Bucket: bucketName,
-                Key: targetPath,
-
+    
+        try {
+            const { Body } = await this.client.send(request);
+            return toString(Body as ReadableStream | Blob)
+        } catch(error) {
+            const { httpStatusCode } = error.$metadata
+            if(404 == httpStatusCode) {
+                return ''
+            } else {
+                throw error
             }
-
-            this.client.putObject(request, function(err, output) {
-                if(err) {
-                    return reject(err);
-                }
-
-                return resolve(content)
-            })
-        });
+        }
     }
+
+    async storeResource(bucketName:string, targetPath:string, content:string) :Promise<string> {
+        let request:PutObjectCommand = new PutObjectCommand({
+            Body: content,
+            Bucket: bucketName,
+            Key: targetPath,
+        })
+
+        await this.client.send(request)
+        return Promise.resolve(content)
+    }
+}
+  
+async function toString(body: ReadableStream | Blob):Promise<string> {
+    const response = new Response(body)
+    return response.text()
 }
