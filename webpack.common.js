@@ -1,6 +1,7 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
     entry: {
@@ -16,21 +17,22 @@ module.exports = {
             },
             {
                 test: /\.(css)/,
-                use: [{
-                    loader: 'style-loader', // inject CSS to page
-                  }, {
+                use: [ 
+                  MiniCssExtractPlugin.loader, // instead of style-loader
+                  {
                     loader: 'css-loader', // translates CSS into CommonJS modules
                   }]
             },
             {
                 test: /\.(scss)/,
-                use: [{
-                  loader: 'style-loader', // inject CSS to page
-                }, {
-                  loader: 'css-loader', // translates CSS into CommonJS modules
-                }, {
-                  loader: 'sass-loader' // compiles Sass to CSS
-                }]
+                use: [
+                  MiniCssExtractPlugin.loader, 
+                  {
+                    loader: 'css-loader', // translates CSS into CommonJS modules
+                  }, {
+                    loader: 'sass-loader' // compiles Sass to CSS
+                  }
+                ]
             },
             {
               test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -66,6 +68,7 @@ module.exports = {
         path: path.resolve(__dirname, 'target')
     },
     plugins: [
+        new MiniCssExtractPlugin(),
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
           inlineSource: '.(js|css)$', // embed all javascript and css inline
