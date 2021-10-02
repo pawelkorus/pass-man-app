@@ -5,8 +5,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
     entry: {
-      'index': './src/index.tsx',
-      'login': './src/login.tsx'
+      'index': './src/index.tsx'
     },
     module: {
         rules: [
@@ -75,12 +74,6 @@ module.exports = {
           chunks: ['index'],
           template: 'src/index.html',
           filename: 'index.html'
-        }),
-        new HtmlWebpackPlugin({
-          inlineSource: '.(js|css)$', // embed all javascript and css inline
-          template: 'src/index.html',
-          chunks: ['login'],
-          filename: 'login.html'
         })
     ]
 };
