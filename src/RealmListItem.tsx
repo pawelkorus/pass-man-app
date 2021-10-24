@@ -1,34 +1,25 @@
 import React from 'react'
 import { Badge, Button, FormControl, ButtonGroup, Col, Row } from 'react-bootstrap'
-import { Typeahead } from 'react-bootstrap-typeahead'
 import { RealmDefinition } from './service'
+import { RealmTagsInput } from './RealmTagsInput'
 
 type Props = {
     item: RealmDefinition
-    allTags: string[]
 
     onItemChanged?:(item:RealmDefinition) => void,
     onItemRemoved?:(item:RealmDefinition) => void
 }
 
-type Tag = {
-    value:string
-}
-
 export default (props:Props):JSX.Element => {
     var [editEnabled, setEditEnabled] = React.useState(false)
 
-    function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string) {
+    function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string|string[]) {
         if(field == 'tags') {
-            return    
+            item[field] = newValue as string[]    
         } else {
-            item[field] = newValue;
+            item[field] = newValue as string
         }
-        props?.onItemChanged(item);
-    }
-
-    function handleTagsChanged(item:RealmDefinition, items:Tag[]) {
-        item.tags = items.map(obj => obj.value)
+        props?.onItemChanged(item)
     }
 
     function handleSaveItem(item:RealmDefinition) {
@@ -64,15 +55,10 @@ export default (props:Props):JSX.Element => {
     </Col>
     <Col xs="3" className="text-break">
     {editEnabled?
-        <Typeahead
+        <RealmTagsInput
             id={"tags-field-" + props.item.id}
-            labelKey="value"
-            multiple
-            defaultSelected={props.item.tags.map(v => { return {value: v}})}
-            options={props.allTags.map(v => { return {value: v}})}
-            placeholder="Add tag"
-            allowNew
-            onChange={handleTagsChanged.bind(this, props.item)}
+            tags={props.item.tags}
+            onChange={handleItemChanged.bind(this, "tags", props.item)}
         />
         : <div>
             {props.item.tags.map(t => <Badge key={t} className="mx-1" variant="info">{t}</Badge>)

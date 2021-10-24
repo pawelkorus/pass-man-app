@@ -9,22 +9,15 @@ type Props = {
 }
 
 export default ({}:Props):JSX.Element => {
-    var [tags, setTags] = React.useState([])
     var [filter, setFilter] = React.useState('')
     var [loading, setLoading] = React.useState(true)
     var realmsContext = useRealms()
     React.useEffect(componentDidMount, [realmsContext.state.realms])
-    React.useEffect(updateTags, [realmsContext.state.realms])
 
     function componentDidMount() {
         if(realmsContext.state.realms && loading) {
             setLoading(false)
         }
-    }
-
-    function updateTags() {
-        if(realmsContext.state.realms)
-            setTags(caclulateAllTags(realmsContext.state.realms))
     }
 
     function handleSaveOnClick(e:React.MouseEvent) {
@@ -68,14 +61,6 @@ export default ({}:Props):JSX.Element => {
         return false
     }
 
-    function caclulateAllTags(items:RealmDefinition[]):string[] {
-        let uniqueTags = items.map(item => item.tags)
-            .reduce((accumulator, value) => accumulator.concat(value), [])
-            .reduce((accumulator, value) => accumulator.add(value), new Set<string>())
-
-        return [...uniqueTags]
-    }
-
     return (
 <div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between">
@@ -111,7 +96,6 @@ export default ({}:Props):JSX.Element => {
             </Spinner>
         </div>
         : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
-                        tags={tags}
                         onItemRemoved={handleItemRemoved} 
                         onItemChanged={handleItemChanged}></RealmList>
     }
