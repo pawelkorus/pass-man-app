@@ -6,11 +6,14 @@ import App from './App';
 import { ConfigProvider } from './context/config.context'
 import { ConfigContext } from './context/config.context'
 import { AuthContext, AuthProvider } from './context/auth.context'
+import S3RealmsProvider from './aws'
 
 ReactDOM.render(
 <ConfigProvider> 
     <AuthProvider>
-        <App/> 
+        <S3RealmsProvider>
+            <App/>
+        </S3RealmsProvider> 
     </AuthProvider>
 </ConfigProvider>, 
     document.querySelector('#root'));

@@ -1,14 +1,9 @@
 import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner} from 'react-bootstrap'
 import RealmList from './RealmList'
-import { setupRealms, 
-    fetchRealms, 
-    pushRealms,  
-    RealmDefinition } from "./service"
+import { RealmDefinition } from "./service"
 import { v4 as uuidv4 } from 'uuid'
-import { Config } from './config'
-import { ConfigContext } from './context/config.context'
-import { AuthContext } from './context/auth.context'
+import { useRealms } from './context/realms.context' 
 
 type Props = {
 }
@@ -18,26 +13,20 @@ export default ({}:Props):JSX.Element => {
     var [tags, setTags] = React.useState([])
     var [filter, setFilter] = React.useState('')
     var [loading, setLoading] = React.useState(true)
-    var configContext = React.useContext(ConfigContext)
-    var authContext = React.useContext(AuthContext)
-    React.useEffect(() => { componentDidMount() }, [configContext.state.config, authContext.state.credentials])
-
+    var realmsContext = useRealms()
+    React.useEffect(() => { componentDidMount() }, [realmsContext.state.realms])
+    
     async function componentDidMount() {
-        if(configContext.state.config && authContext.state.credentials) {
-            let config:Config = configContext.state.config
-            
-            await setupRealms(config.source, () => Promise.resolve(authContext.state.credentials))
-            let realms = await fetchRealms()
-            
-            setItems(realms)
-            setTags(caclulateAllTags(realms))
+        if(realmsContext.state.realms && loading) {
+            setItems(realmsContext.state.realms)
+            setTags(caclulateAllTags(items))
             setLoading(false)
         }
     }
 
     function handleSaveOnClick(e:React.MouseEvent) {
         e.preventDefault();
-        pushRealms(items)
+        realmsContext.actions.pushRealms(items)
     }
 
     function handleAddBtnOnClick(e:React.MouseEvent) {

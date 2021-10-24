@@ -1,43 +1,35 @@
-import { default as React, useEffect, useState } from 'react';
-import { RealmsContextInterface, RealmsContext } from "../context/realms.context"
+import React from 'react';
+import { RealmsContext } from "../context/realms.context"
 import { setupRealms, fetchRealms, pushRealms, RealmDefinition } from "../service"
-import { Config, fetchConfig } from "../config"
-import { Credentials, Provider } from "@aws-sdk/types";
-import { config } from 'webpack';
+import { ConfigContext } from '../context/config.context';
+import { AuthContext } from '../context/auth.context';
 
-type Props = {
-    credentials: Provider<Credentials>
-    children: React.ReactNode,
-};
+type RealmsProviderProps = {
+    children:React.ReactNode
+}
 
-export default function S3RealmsProvider({ credentials, children }:Props) {
-    useEffect(() => {
-        fetchConfig()
-            .then((c:Config) => {
-                setupRealms(c.source, credentials)
-            })
-            .then(fetchRealms)
-            .then((realms) => {
-                setRealms(realms)
-            })
-    }, [])
+export default function ({children}:RealmsProviderProps) {
+    var [realms, setRealms] = React.useState(null)
+    var configContext = React.useContext(ConfigContext)
+    var authContext = React.useContext(AuthContext)
+    React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.credentials])
     
-    const [realms, setRealms] = useState([])
-    const value = { 
-        realms: realms,
-        //fetchRealms: fetchRealms;,
-        pushRealms: (updatedRealms:RealmDefinition[]) => {
-            return pushRealms(updatedRealms)
-                .then((realms) => {
-                    setRealms(realms)
-                    return realms
-                })
+    async function loadRealms() {
+        if(configContext.state.config && authContext.state.credentials) {
+            setupRealms(configContext.state.config.source, () => Promise.resolve(authContext.state.credentials))
+            let data = await fetchRealms()
+            setRealms(data)
         }
     }
-    
+
+    async function pushRealmsAndUpdateState(updateRealms:RealmDefinition[]) {
+        let storedRealms = await pushRealms(updateRealms)
+        setRealms(storedRealms)
+    }
+
     return (
-<RealmsContext.Provider value={value}>
+<RealmsContext.Provider value={{state:{ realms:realms }, actions:{ pushRealms: pushRealmsAndUpdateState }}}>
     {children}
 </RealmsContext.Provider>
-    ) 
+)
 }

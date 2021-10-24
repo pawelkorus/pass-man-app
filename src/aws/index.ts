@@ -1,1 +1,3 @@
-export { default as S3RealmsProvider } from './S3RealmsProvider'
+import S3RealmsProvider from "./S3RealmsProvider"
+
+export default S3RealmsProvider
