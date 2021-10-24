@@ -4,3 +4,5 @@ setup_node
 .dev-data
 .config-local
 .config-dev
+.idea
+*.iml
