@@ -9,9 +9,15 @@ type RealmsProviderProps = {
 }
 
 export default function ({children}:RealmsProviderProps) {
-    var [realms, setRealms] = React.useState(null)
-    var configContext = React.useContext(ConfigContext)
-    var authContext = React.useContext(AuthContext)
+    const actions = {actions: {
+        pushRealms: pushRealmsAndUpdateState,
+        addRealm: addRealm,
+        removeRealm: removeRealm,
+        updateRealm: updateRealm      
+    }}
+    const [realms, setRealms] = React.useState<RealmDefinition[]>(null)
+    const configContext = React.useContext(ConfigContext)
+    const authContext = React.useContext(AuthContext)
     React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.credentials])
     
     async function loadRealms() {
@@ -22,13 +28,32 @@ export default function ({children}:RealmsProviderProps) {
         }
     }
 
-    async function pushRealmsAndUpdateState(updateRealms:RealmDefinition[]) {
-        let storedRealms = await pushRealms(updateRealms)
+    async function pushRealmsAndUpdateState() {
+        let storedRealms = await pushRealms(realms)
         setRealms(storedRealms)
     }
 
+    function addRealm(realm:RealmDefinition) {
+        setRealms(realms.concat(realm))
+    }
+
+    function removeRealm(realm:RealmDefinition) {
+        setRealms(prev => prev.filter(item => item.id != realm.id))
+    }
+
+    function updateRealm(realm:RealmDefinition) {
+        let updated = realms.map(item => {
+             if(item.id == realm.id) {
+                 console.log(realm)
+                 return realm;
+             }
+             return item;
+        })
+        setRealms(updated)
+    }
+
     return (
-<RealmsContext.Provider value={{state:{ realms:realms }, actions:{ pushRealms: pushRealmsAndUpdateState }}}>
+<RealmsContext.Provider value={{...{ state:{ realms:realms }}, ...actions}}>
     {children}
 </RealmsContext.Provider>
 )

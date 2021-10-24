@@ -9,7 +9,6 @@ type Props = {
 }
 
 export default ({}:Props):JSX.Element => {
-    var [items, setItems] = React.useState([])
     var [tags, setTags] = React.useState([])
     var [filter, setFilter] = React.useState('')
     var [loading, setLoading] = React.useState(true)
@@ -18,50 +17,37 @@ export default ({}:Props):JSX.Element => {
     
     async function componentDidMount() {
         if(realmsContext.state.realms && loading) {
-            setItems(realmsContext.state.realms)
-            setTags(caclulateAllTags(items))
+            setTags(caclulateAllTags(realmsContext.state.realms))
             setLoading(false)
         }
     }
 
     function handleSaveOnClick(e:React.MouseEvent) {
         e.preventDefault();
-        realmsContext.actions.pushRealms(items)
+        realmsContext.actions.pushRealms()
     }
 
     function handleAddBtnOnClick(e:React.MouseEvent) {
         e.preventDefault();
 
-        let updatedItems = items.concat({
+        realmsContext.actions.addRealm({
             id: uuidv4(),
             realm: "",
             username: "",
             password: "",
             tags: []
-        });
-
-        setItems(updatedItems)
+        })
     }
 
     function handleItemRemoved(removedItem:RealmDefinition) {
-        let updatedItems = items.filter(item => item.id != removedItem.id)
-        let tags = caclulateAllTags(updatedItems)
-        setItems(updatedItems)
+        realmsContext.actions.removeRealm(removedItem)
+        let tags = caclulateAllTags(realmsContext.state.realms)
         setTags(tags)
     }
 
     function handleItemChanged(changedItem:RealmDefinition) {   
-        let updated = items.map(item => {
-            if(item.id == changedItem.id) {
-                console.log(changedItem)
-                return changedItem;
-            }
-            return item;
-        })
-
-        let tags = caclulateAllTags(updated)
-
-        setItems(updated)
+        realmsContext.actions.updateRealm(changedItem)
+        let tags = caclulateAllTags(realmsContext.state.realms)
         setTags(tags)
     }
 
@@ -123,7 +109,7 @@ export default ({}:Props):JSX.Element => {
                 <span className="sr-only">Loading...</span>
             </Spinner>
         </div>
-        : <RealmList    items={ items.filter(matchFilter) }
+        : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
                         tags={tags}
                         onItemRemoved={handleItemRemoved} 
                         onItemChanged={handleItemChanged}></RealmList>

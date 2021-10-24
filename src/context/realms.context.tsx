@@ -1,14 +1,15 @@
 import React from 'react';
-import { fetchRealms, pushRealms, RealmDefinition, setupRealms } from '../service'
-import { ConfigContext } from './config.context'
-import { AuthContext } from './auth.context'
+import { RealmDefinition } from '../service'
 
 export type RealmsContextProps = {
     state: {
         realms:RealmDefinition[]
     },
     actions: {
-        pushRealms: (realms:RealmDefinition[]) => void
+        pushRealms: () => void
+        addRealm: (realm:RealmDefinition) => void,
+        removeRealm: (realm:RealmDefinition) => void,
+        updateRealm: (realm:RealmDefinition) => void
     }
 }
 
@@ -17,8 +18,17 @@ export const RealmsContext = React.createContext<RealmsContextProps>({
         realms: []
     },
     actions: {
-        pushRealms: (updatedRealms:RealmDefinition[]) => {
-            console.error("Realms context not ready yet")    
+        pushRealms: () => {
+            console.error(REALMS_CONTEXT_NOT_READY_YET)    
+        },
+        addRealm: (realm:RealmDefinition) => {
+            console.error(REALMS_CONTEXT_NOT_READY_YET)
+        },
+        removeRealm: (realm:RealmDefinition) => {
+            console.error(REALMS_CONTEXT_NOT_READY_YET)
+        },
+        updateRealm: (realm:RealmDefinition) => {
+            console.error(REALMS_CONTEXT_NOT_READY_YET)
         }
     }
 })
@@ -26,3 +36,5 @@ export const RealmsContext = React.createContext<RealmsContextProps>({
 export function useRealms() {
     return React.useContext(RealmsContext)
 }
+
+const REALMS_CONTEXT_NOT_READY_YET = "realms context not ready yet"
