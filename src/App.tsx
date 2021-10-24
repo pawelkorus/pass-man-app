@@ -13,13 +13,18 @@ export default ({}:Props):JSX.Element => {
     var [filter, setFilter] = React.useState('')
     var [loading, setLoading] = React.useState(true)
     var realmsContext = useRealms()
-    React.useEffect(() => { componentDidMount() }, [realmsContext.state.realms])
-    
-    async function componentDidMount() {
+    React.useEffect(componentDidMount, [realmsContext.state.realms])
+    React.useEffect(updateTags, [realmsContext.state.realms])
+
+    function componentDidMount() {
         if(realmsContext.state.realms && loading) {
-            setTags(caclulateAllTags(realmsContext.state.realms))
             setLoading(false)
         }
+    }
+
+    function updateTags() {
+        if(realmsContext.state.realms)
+            setTags(caclulateAllTags(realmsContext.state.realms))
     }
 
     function handleSaveOnClick(e:React.MouseEvent) {
@@ -41,14 +46,10 @@ export default ({}:Props):JSX.Element => {
 
     function handleItemRemoved(removedItem:RealmDefinition) {
         realmsContext.actions.removeRealm(removedItem)
-        let tags = caclulateAllTags(realmsContext.state.realms)
-        setTags(tags)
     }
 
     function handleItemChanged(changedItem:RealmDefinition) {   
         realmsContext.actions.updateRealm(changedItem)
-        let tags = caclulateAllTags(realmsContext.state.realms)
-        setTags(tags)
     }
 
     function handleFilterChanged(event:React.ChangeEvent<HTMLInputElement>) {
