@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Badge, Button, FormControl, ButtonGroup, Col, Row } from 'react-bootstrap'
+import { Badge, Button, FormControl, ButtonGroup, Col, Row } from 'react-bootstrap'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import { RealmDefinition } from './service'
 
@@ -11,100 +11,86 @@ type Props = {
     onItemRemoved?:(item:RealmDefinition) => void
 }
 
-type State = {
-    editEnabled: boolean
-}
-
 type Tag = {
     value:string
 }
 
-export default class RealmListItem extends React.Component<Props, State> {
+export default (props:Props):JSX.Element => {
+    var [editEnabled, setEditEnabled] = React.useState(false)
 
-    constructor(props:Props) {
-        super(props)
-
-        this.state = {
-            editEnabled: false
-        }
-    }
-
-    handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string) {
+    function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string) {
         if(field == 'tags') {
             return    
         } else {
             item[field] = newValue;
         }
-        if(this.props.onItemChanged) this.props.onItemChanged(item);
+        props?.onItemChanged(item);
     }
 
-    handleTagsChanged(item:RealmDefinition, items:Tag[]) {
+    function handleTagsChanged(item:RealmDefinition, items:Tag[]) {
         item.tags = items.map(obj => obj.value)
     }
 
-    handleSaveItem(item:RealmDefinition) {
-        this.setState({
-            editEnabled: false
-        })
-        if(this.props.onItemChanged) this.props.onItemChanged(this.props.item)
+    function handleSaveItem(item:RealmDefinition) {
+        setEditEnabled(false)
+        props?.onItemChanged(props.item)
     }
 
-    render() {
-        return <Row className="align-items-center border-bottom pt-2 pb-2">
+    return (
+<Row className="align-items-center border-bottom pt-2 pb-2">
     <Col xs="3" className="text-break">
-    { this.state.editEnabled?
+    {editEnabled?
         <FormControl 
-            defaultValue={this.props.item.realm}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => this.handleItemChanged("realm", this.props.item, e.target.value)}></FormControl>
-        : this.props.item.realm
+            defaultValue={props.item.realm}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("realm", props.item, e.target.value)}></FormControl>
+        : props.item.realm
     }
     </Col>
     <Col className="text-break">
-    {this.state.editEnabled?
+    {editEnabled?
         <FormControl 
-            defaultValue={this.props.item.username}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => this.handleItemChanged("username", this.props.item, e.target.value)}></FormControl>
-        : this.props.item.username
+            defaultValue={props.item.username}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("username", props.item, e.target.value)}></FormControl>
+        : props.item.username
     }
     </Col>
     <Col className="text-break">
-    {this.state.editEnabled?
+    {editEnabled?
         <FormControl 
-            defaultValue={this.props.item.password}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => this.handleItemChanged("password", this.props.item, e.target.value)}></FormControl>
-        : this.props.item.password
+            defaultValue={props.item.password}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("password", props.item, e.target.value)}></FormControl>
+        : props.item.password
     }
     </Col>
     <Col xs="3" className="text-break">
-    {this.state.editEnabled?
+    {editEnabled?
         <Typeahead
-            id={"tags-field-" + this.props.item.id}
+            id={"tags-field-" + props.item.id}
             labelKey="value"
             multiple
-            defaultSelected={this.props.item.tags.map(v => { return {value: v}})}
-            options={this.props.allTags.map(v => { return {value: v}})}
+            defaultSelected={props.item.tags.map(v => { return {value: v}})}
+            options={props.allTags.map(v => { return {value: v}})}
             placeholder="Add tag"
             allowNew
-            onChange={this.handleTagsChanged.bind(this, this.props.item)}
+            onChange={handleTagsChanged.bind(this, props.item)}
         />
         : <div>
-            {this.props.item.tags.map(t => <Badge key={t} className="mx-1" variant="info">{t}</Badge>)
+            {props.item.tags.map(t => <Badge key={t} className="mx-1" variant="info">{t}</Badge>)
             }
         </div>
     }
     </Col>
     <Col sm="auto">
         <ButtonGroup>
-            { this.state.editEnabled?
-                <Button onClick={e => { this.handleSaveItem(this.props.item) }}><i className="fas fa-save"></i></Button>
-                : <Button onClick={e => { this.setState({ editEnabled: true })}}><i className="fas fa-edit"></i></Button>
+            { editEnabled?
+                <Button onClick={e => { handleSaveItem(props.item) }}><i className="fas fa-save"></i></Button>
+                : <Button onClick={e => { setEditEnabled(true)}}><i className="fas fa-edit"></i></Button>
             }
-            <Button variant="danger" onClick={e => { this.props?.onItemRemoved(this.props.item); } }>
+            <Button variant="danger" onClick={e => { props?.onItemRemoved(props.item); } }>
                 <i className="fas fa-trash-alt"></i>
             </Button>
         </ButtonGroup>
     </Col>
 </Row>
-    }
-
+    )
 }

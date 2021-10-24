@@ -15,28 +15,14 @@ type Props = {
 
 }
 
-type State = {
-    items:RealmDefinition[],
-    tags:string[],
-    filter:string,
-    loading:boolean
-}
+export default ({}:Props):JSX.Element => {
+    var [items, setItems] = React.useState([])
+    var [tags, setTags] = React.useState([])
+    var [filter, setFilter] = React.useState('')
+    var [loading, setLoading] = React.useState(true)
+    React.useEffect(() => { componentDidMount() }, [])
 
-export default class App extends React.Component<Props,State> {
-    constructor(props:Props) {
-        super(props);
-
-        this.state = {
-            items: [],
-            tags: [],
-            filter: "",
-            loading: true
-        }
-    }
-
-    async componentDidMount() {
-        let component = this;
-
+    async function componentDidMount() {
         let config:Config = await fetchConfig()
         let auth:Provider<Credentials> = null
         if(config.cognito) {
@@ -44,25 +30,23 @@ export default class App extends React.Component<Props,State> {
         } else {
             auth = await authenticateClientIdClientSecret(config.clientIdSecret)
         }
-        //let auth = await authenticate(config.cognito)
         await setupRealms(config.source, auth)
         let realms = await fetchRealms()
-        component.setState({
-            items: realms,
-            tags: component.caclulateAllTags(realms),
-            loading: false
-        })
+        
+        setItems(realms)
+        setTags(caclulateAllTags(realms))
+        setLoading(false)
     }
 
-    handleSaveOnClick(e:React.MouseEvent) {
+    function handleSaveOnClick(e:React.MouseEvent) {
         e.preventDefault();
-        pushRealms(this.state.items)
+        pushRealms(items)
     }
 
-    handleAddBtnOnClick(e:React.MouseEvent) {
+    function handleAddBtnOnClick(e:React.MouseEvent) {
         e.preventDefault();
 
-        let updatedItems = this.state.items.concat({
+        let updatedItems = items.concat({
             id: uuidv4(),
             realm: "",
             username: "",
@@ -70,22 +54,18 @@ export default class App extends React.Component<Props,State> {
             tags: []
         });
 
-        this.setState({
-            items: updatedItems,
-        });
+        setItems(updatedItems)
     }
 
-    handleItemRemoved(removedItem:RealmDefinition) {
-        let updatedItems = this.state.items.filter(item => item.id != removedItem.id)
-        let tags = this.caclulateAllTags(updatedItems)
-        this.setState({
-            items: updatedItems,
-            tags: tags
-        });
+    function handleItemRemoved(removedItem:RealmDefinition) {
+        let updatedItems = items.filter(item => item.id != removedItem.id)
+        let tags = caclulateAllTags(updatedItems)
+        setItems(updatedItems)
+        setTags(tags)
     }
 
-    handleItemChanged(changedItem:RealmDefinition) {   
-        let updated = this.state.items.map(item => {
+    function handleItemChanged(changedItem:RealmDefinition) {   
+        let updated = items.map(item => {
             if(item.id == changedItem.id) {
                 console.log(changedItem)
                 return changedItem;
@@ -93,21 +73,17 @@ export default class App extends React.Component<Props,State> {
             return item;
         })
 
-        let tags = this.caclulateAllTags(updated)
+        let tags = caclulateAllTags(updated)
 
-        this.setState({
-            items: updated,
-            tags: tags
-        })
+        setItems(updated)
+        setTags(tags)
     }
 
-    handleFilterChanged(event:React.ChangeEvent<HTMLInputElement>) {
-        this.setState({
-            filter: event.target.value
-        })
+    function handleFilterChanged(event:React.ChangeEvent<HTMLInputElement>) {
+        setFilter(event.target.value)
     }
 
-    matchFilter(filter:string, item:RealmDefinition) {
+    function matchFilter(item:RealmDefinition):boolean {
         if(item.realm?.indexOf(filter) > -1) {
             return true
         }
@@ -119,7 +95,7 @@ export default class App extends React.Component<Props,State> {
         return false
     }
 
-    caclulateAllTags(items:RealmDefinition[]):string[] {
+    function caclulateAllTags(items:RealmDefinition[]):string[] {
         let uniqueTags = items.map(item => item.tags)
             .reduce((accumulator, value) => accumulator.concat(value), [])
             .reduce((accumulator, value) => accumulator.add(value), new Set<string>())
@@ -127,8 +103,8 @@ export default class App extends React.Component<Props,State> {
         return [...uniqueTags]
     }
 
-    render() {
-        return <div className="container-fluid h-100 d-flex flex-column">
+    return (
+<div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between">
         <div className="container">
             <Navbar.Brand href="#">pass-man</Navbar.Brand>
@@ -138,7 +114,7 @@ export default class App extends React.Component<Props,State> {
                 </Nav>
                 <Form inline className="flex-grow-1">
                     <InputGroup className="mx-auto w-75">
-                        <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ this.handleFilterChanged.bind(this) }/>
+                        <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ handleFilterChanged }/>
                         <InputGroup.Append>
                             <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
                         </InputGroup.Append>
@@ -146,8 +122,8 @@ export default class App extends React.Component<Props,State> {
                 </Form>
                 <Form inline>
                     <ButtonGroup>
-                        <Button onClick={ this.handleAddBtnOnClick.bind(this) }><i className="fas fa-plus"></i></Button>
-                        <Button onClick={ this.handleSaveOnClick.bind(this) }><i className="fas fa-cloud-upload-alt"></i></Button>
+                        <Button onClick={ handleAddBtnOnClick }><i className="fas fa-plus"></i></Button>
+                        <Button onClick={ handleSaveOnClick }><i className="fas fa-cloud-upload-alt"></i></Button>
                     </ButtonGroup>
                 </Form>
             </Navbar.Collapse>
@@ -155,18 +131,18 @@ export default class App extends React.Component<Props,State> {
     </Navbar>
 
     <div className="row flex-fill">
-    {this.state.loading?
+    {loading?
         <div className="mx-auto my-auto">
             <Spinner animation="border" role="status">
                 <span className="sr-only">Loading...</span>
             </Spinner>
         </div>
-        : <RealmList    items={ this.state.items.filter(this.matchFilter.bind(this, this.state.filter)) }
-                        tags={this.state.tags}
-                        onItemRemoved={ this.handleItemRemoved.bind(this) } 
-                        onItemChanged={ this.handleItemChanged.bind(this) }></RealmList>
+        : <RealmList    items={ items.filter(matchFilter) }
+                        tags={tags}
+                        onItemRemoved={handleItemRemoved} 
+                        onItemChanged={handleItemChanged}></RealmList>
     }
     </div>
 </div>
-    }
+    )
 }

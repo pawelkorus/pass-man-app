@@ -11,24 +11,17 @@ type Props = {
     onItemRemoved?:(item:RealmDefinition) => void
 }
 
-type State = {
-}
-export default class CredentialsList extends React.Component<Props, State> {
-    constructor(props:Props) {
-        super(props);
-    }
-
-    render() {
-        return <Container>
-    { this.props.items.map(item => 
+export default (props:Props):React.ReactElement => {
+    return (
+<Container>
+    { props.items.map(item => 
     <RealmListItem
         key={item.id}
         item={item}
-        allTags={this.props.tags}
-        onItemChanged={this.props?.onItemChanged}
-        onItemRemoved={this.props?.onItemRemoved}
-        >
-    </RealmListItem>) }
+        allTags={props.tags}
+        onItemChanged={props?.onItemChanged}
+        onItemRemoved={props?.onItemRemoved}
+        />) }
 </Container>
-    }
+    )
 }
