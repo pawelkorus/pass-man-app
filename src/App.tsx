@@ -3,16 +3,14 @@ import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner
 import RealmList from './RealmList'
 import { setupRealms, 
     fetchRealms, 
-    pushRealms, 
-    authenticateCognito, 
-    RealmDefinition, 
-    authenticateClientIdClientSecret} from "./service"
-import { Config, fetchConfig } from "./config"
+    pushRealms,  
+    RealmDefinition } from "./service"
 import { v4 as uuidv4 } from 'uuid'
-import { Credentials, Provider } from "@aws-sdk/types";
+import { Config } from './config'
+import { ConfigContext } from './context/config.context'
+import { AuthContext } from './context/auth.context'
 
 type Props = {
-
 }
 
 export default ({}:Props):JSX.Element => {
@@ -20,22 +18,21 @@ export default ({}:Props):JSX.Element => {
     var [tags, setTags] = React.useState([])
     var [filter, setFilter] = React.useState('')
     var [loading, setLoading] = React.useState(true)
-    React.useEffect(() => { componentDidMount() }, [])
+    var configContext = React.useContext(ConfigContext)
+    var authContext = React.useContext(AuthContext)
+    React.useEffect(() => { componentDidMount() }, [configContext.state.config, authContext.state.credentials])
 
     async function componentDidMount() {
-        let config:Config = await fetchConfig()
-        let auth:Provider<Credentials> = null
-        if(config.cognito) {
-            auth = await authenticateCognito(config.cognito)  
-        } else {
-            auth = await authenticateClientIdClientSecret(config.clientIdSecret)
+        if(configContext.state.config && authContext.state.credentials) {
+            let config:Config = configContext.state.config
+            
+            await setupRealms(config.source, () => Promise.resolve(authContext.state.credentials))
+            let realms = await fetchRealms()
+            
+            setItems(realms)
+            setTags(caclulateAllTags(realms))
+            setLoading(false)
         }
-        await setupRealms(config.source, auth)
-        let realms = await fetchRealms()
-        
-        setItems(realms)
-        setTags(caclulateAllTags(realms))
-        setLoading(false)
     }
 
     function handleSaveOnClick(e:React.MouseEvent) {

@@ -1,3 +1,6 @@
+import React from "react"
+import { ConfigContext } from '../context/config.context'
+
 export const fetchConfig = async():Promise<Config> => {
     let response = await fetch("/config.json")
     return response.json()

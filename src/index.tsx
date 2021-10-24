@@ -3,5 +3,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import App from './App';
+import { ConfigProvider } from './context/config.context'
+import { ConfigContext } from './context/config.context'
+import { AuthContext, AuthProvider } from './context/auth.context'
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(
+<ConfigProvider> 
+    <AuthProvider>
+        <App/> 
+    </AuthProvider>
+</ConfigProvider>, 
+    document.querySelector('#root'));
