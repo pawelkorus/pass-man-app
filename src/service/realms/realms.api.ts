@@ -2,6 +2,7 @@ import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
 import { AWSSource } from "../../config"
 import { Credentials, Provider } from "@aws-sdk/types";
+import { each } from "jquery";
 
 let resolveBackend:Function
 let resolveSource:Function
@@ -19,7 +20,8 @@ export interface RealmDefinition {
     username: string,
     password: string,
     tags: string[],
-    id: string
+    id: string,
+    persisted: boolean
 }
 
 export const setupRealms = function(source:AWSSource, credentials:Provider<Credentials>) {
@@ -31,13 +33,16 @@ export const fetchRealms = async () => {
     let awsBackend = await awsBackendPromise
     let source = await awsSourcePromise
     let value = await awsBackend.fetchResource(source.bucket, source.object)
-    return Papa.parse<RealmDefinition>(value, { header: true, transform: transform }).data
+    let realms = Papa.parse<RealmDefinition>(value, { header: true, transform: transform }).data
+    realms?.forEach(realm => realm.persisted = true)
+    return realms
 }
 
 export const pushRealms = async (realms:RealmDefinition[]) => {
     let awsBackend = await awsBackendPromise
     let awsSource = await awsSourcePromise
     await awsBackend.storeResource(awsSource.bucket, awsSource.object, Papa.unparse(realms))
+    realms?.forEach(realm => realm.persisted = true)
     return realms
 }
 

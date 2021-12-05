@@ -33,7 +33,8 @@ export default ({}:Props):JSX.Element => {
             realm: "",
             username: "",
             password: "",
-            tags: []
+            tags: [],
+            persisted: false
         })
     }
 
@@ -58,7 +59,15 @@ export default ({}:Props):JSX.Element => {
             return true
         }
 
+        if(!item.persisted) {
+            return true
+        }
+
         return false
+    }
+
+    function isEmpty(item:RealmDefinition):boolean {
+        return !(item.realm || item.password || item.username || item.tags?.length)
     }
 
     return (

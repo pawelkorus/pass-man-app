@@ -15,7 +15,9 @@ export default (props:Props):JSX.Element => {
 
     function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string|string[]) {
         if(field == 'tags') {
-            item[field] = newValue as string[]    
+            item[field] = newValue as string[]
+        } else if(field == 'persisted') {
+            // skip
         } else {
             item[field] = newValue as string
         }
