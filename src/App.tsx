@@ -66,10 +66,6 @@ export default ({}:Props):JSX.Element => {
         return false
     }
 
-    function isEmpty(item:RealmDefinition):boolean {
-        return !(item.realm || item.password || item.username || item.tags?.length)
-    }
-
     return (
 <div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between">
