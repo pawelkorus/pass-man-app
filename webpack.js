@@ -13,7 +13,7 @@ module.exports = (env, argv) => {
         devtool: 'source-map',
         devServer: {
             host: '0.0.0.0',
-            contentBase: [path.resolve(__dirname, 'target'), path.resolve(__dirname, configDir)]
+            static: [path.resolve(__dirname, 'target'), path.resolve(__dirname, configDir)]
         },
         optimization: { 
             splitChunks: {
