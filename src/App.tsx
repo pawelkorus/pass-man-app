@@ -75,15 +75,13 @@ export default ({}:Props):JSX.Element => {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav>
                 </Nav>
-                <Form inline className="flex-grow-1">
+                <Form className="flex-grow-1">
                     <InputGroup className="mx-auto w-75">
                         <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ handleFilterChanged }/>
-                        <InputGroup.Append>
-                            <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
-                        </InputGroup.Append>
+                        <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
                     </InputGroup>
                 </Form>
-                <Form inline>
+                <Form>
                     <ButtonGroup>
                         <Button onClick={ handleAddBtnOnClick }><i className="fas fa-plus"></i></Button>
                         <Button onClick={ handleSaveOnClick }><i className="fas fa-cloud-upload-alt"></i></Button>
@@ -93,7 +91,7 @@ export default ({}:Props):JSX.Element => {
         </div>
     </Navbar>
 
-    <div className="row flex-fill">
+    <div className="flex-fill">
     {loading?
         <div className="mx-auto my-auto">
             <Spinner animation="border" role="status">
