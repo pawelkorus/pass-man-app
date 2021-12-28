@@ -2,7 +2,6 @@ import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
 import { AWSSource } from "../../config"
 import { Credentials, Provider } from "@aws-sdk/types";
-import { each } from "jquery";
 
 let resolveBackend:Function
 let resolveSource:Function
