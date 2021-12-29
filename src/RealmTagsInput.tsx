@@ -1,7 +1,6 @@
 import React from 'react'
 import { Typeahead } from 'react-bootstrap-typeahead'
-import { useRealms } from './context/realms.context'
-import { RealmDefinition } from './service'  
+import { useRealms, RealmDefinition } from './context/realms.context'  
 
 type Tag = {
     value:string

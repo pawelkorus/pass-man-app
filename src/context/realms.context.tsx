@@ -1,5 +1,13 @@
 import React from 'react';
-import { RealmDefinition } from '../service'
+
+export interface RealmDefinition {
+    realm: string,
+    username: string,
+    password: string,
+    tags: string[],
+    id: string,
+    persisted: boolean
+}
 
 export type RealmsContextProps = {
     state: {

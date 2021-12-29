@@ -1,7 +1,8 @@
 import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
-import { AWSSource } from "../../config"
+import { AWSSource } from "../config"
 import { Credentials, Provider } from "@aws-sdk/types";
+import { RealmDefinition } from "../context/realms.context"
 
 let resolveBackend:Function
 let resolveSource:Function
@@ -13,15 +14,6 @@ const awsBackendPromise = new Promise<AWSBackend>((resolve, reject) => {
 const awsSourcePromise = new Promise<AWSSource>((resolve, reject) => {
     resolveSource = resolve
 })
-
-export interface RealmDefinition {
-    realm: string,
-    username: string,
-    password: string,
-    tags: string[],
-    id: string,
-    persisted: boolean
-}
 
 export const setupRealms = function(source:AWSSource, credentials:Provider<Credentials>) {
     resolveBackend(new AWSBackend(source, credentials))

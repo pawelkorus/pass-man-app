@@ -1,8 +1,8 @@
 import React from 'react';
-import { RealmsContext } from "../context/realms.context"
-import { setupRealms, fetchRealms, pushRealms, RealmDefinition } from "../service"
+import { RealmsContext, RealmDefinition } from "../context/realms.context"
 import { ConfigContext } from '../context/config.context';
 import { AuthContext } from '../context/auth.context';
+import { setupRealms, fetchRealms, pushRealms } from './realms.api'
 
 type RealmsProviderProps = {
     children:React.ReactNode

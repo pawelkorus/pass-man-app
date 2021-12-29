@@ -2,7 +2,7 @@ import { unmountComponentAtNode } from 'react-dom'
 import { render, screen } from "@testing-library/react";
 import RealmList from "../src/RealmList"
 import React from 'react';
-import { RealmDefinition } from '../src/service'
+import { RealmDefinition } from '../src/context/realms.context'
 
 it("should render empty RealmList", () => {
 

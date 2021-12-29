@@ -1,6 +1,6 @@
 import React from 'react'
 import { Badge, Button, FormControl, ButtonGroup, Col, Row } from 'react-bootstrap'
-import { RealmDefinition } from './service'
+import { RealmDefinition } from './context/realms.context'
 import { RealmTagsInput } from './RealmTagsInput'
 
 type Props = {
