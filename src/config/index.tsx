@@ -1,6 +1,3 @@
-import React from "react"
-import { ConfigContext } from '../context/config.context'
-
 export const fetchConfig = async():Promise<Config> => {
     let response = await fetch("/config.json")
     return response.json()
@@ -11,6 +8,7 @@ export interface Config {
     clientIdSecret?: Credentials,
     source: AWSSource
 }
+
 export interface CognitoOptions {
     identityPoolId:string,
     clientId:string
