@@ -35,7 +35,8 @@ export default class AWSBackend {
 
         const request:GetObjectCommand = new GetObjectCommand({
             Bucket: bucketName,
-            Key: sourcePath
+            Key: sourcePath,
+            ResponseCacheControl: "no-store"
         })
     
         try {
@@ -56,6 +57,7 @@ export default class AWSBackend {
             Body: content,
             Bucket: bucketName,
             Key: targetPath,
+            CacheControl: "no-store"
         })
 
         await this.client.send(request)
