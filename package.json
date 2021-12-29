@@ -11,8 +11,11 @@
     "@types/react-bootstrap-typeahead": "5.1.8",
     "@types/react-dom": "17.0.11",
     "@types/uuid": "8.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
     "clean-webpack-plugin": "4.0.0",
     "css-loader": "6.5.1",
+    "eslint": "^8.5.0",
     "html-webpack-plugin": "5.5.0",
     "jest": "27.4.3",
     "mini-css-extract-plugin": "2.4.5",
@@ -37,7 +40,9 @@
     "build-debug": "webpack --mode development --config webpack.js",
     "develop-dev": "webpack serve --mode development --https --config webpack.js",
     "develop-local": "webpack serve --mode development --https --env local --config webpack.js",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --ext .ts",
+    "lint-and-fix": "eslint . --ext .ts --fix"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.43.0",

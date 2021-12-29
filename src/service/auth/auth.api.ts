@@ -1,4 +1,3 @@
-//import AWS from 'aws-sdk/global';
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { Credentials, Provider } from "@aws-sdk/types";
 import { CognitoOptions, Credentials as Creds } from "../../config"
@@ -8,28 +7,29 @@ type FragmentParams = {
 };
 
 export async function authenticateClientIdClientSecret(credentials:Creds):Promise<Provider<Credentials>> {  
-    const prov:Provider<Credentials> = () => new Promise<Credentials>((resolve, reject) => {
+    const prov:Provider<Credentials> = () => new Promise<Credentials>(resolve => {
                 resolve({
                     accessKeyId: credentials.clientId,
                     secretAccessKey: credentials.clientSecret
                 })
             })
     
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
         resolve(prov)
     })
 }
 
 export const authenticateCognito = function(options:CognitoOptions):Promise<Provider<Credentials>> {
     const fragmentString = window.location.hash.substring(1);
-    let fragmentParams:FragmentParams = {}
+    const fragmentParams:FragmentParams = {}
 
-    let regex = /([^&=]+)=([^&]*)/g, m;
-    while (m = regex.exec(fragmentString)) {
+    const regex = /([^&=]+)=([^&]*)/g;
+    let m;
+    while ((m = regex.exec(fragmentString))) {
         fragmentParams[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
     }
 
-    let preservedState = window.sessionStorage.getItem('cognito_state');
+    const preservedState = window.sessionStorage.getItem('cognito_state');
 
     if(fragmentParams["id_token"] && fragmentParams["state"] == preservedState) {
     
@@ -48,10 +48,10 @@ export const authenticateCognito = function(options:CognitoOptions):Promise<Prov
 
     } else {
         
-        let state = secureRandomString();
+        const state = secureRandomString();
         window.sessionStorage.setItem('cognito_state', state);
 
-        let authRequestParams = { 
+        const authRequestParams = { 
             response_type: 'token id_token',
             client_id: options.clientId,
             redirect_uri: window.location.origin,
@@ -62,14 +62,14 @@ export const authenticateCognito = function(options:CognitoOptions):Promise<Prov
         
         window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?" + new URLSearchParams(authRequestParams).toString();
 
-        return new Promise((resolve, reject) => {
+        return new Promise(() => {
             // never resolve -> redirecting
         })
     }
 }
 
 function secureRandomNumber() {
-    var array = new Uint32Array(1);
+    const array = new Uint32Array(1);
     return window.crypto.getRandomValues(array);
 }
 

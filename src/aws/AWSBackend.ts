@@ -30,10 +30,10 @@ export default class AWSBackend {
         })   
     }
 
-    async fetchResource(bucketName: string, sourcePath: string, encode?: string): Promise<string> {
+    async fetchResource(bucketName: string, sourcePath: string): Promise<string> {
         sourcePath = sourcePath.startsWith('/')? sourcePath.substring(1) : sourcePath;
 
-        let request:GetObjectCommand = new GetObjectCommand({
+        const request:GetObjectCommand = new GetObjectCommand({
             Bucket: bucketName,
             Key: sourcePath
         })
@@ -52,7 +52,7 @@ export default class AWSBackend {
     }
 
     async storeResource(bucketName:string, targetPath:string, content:string) :Promise<string> {
-        let request:PutObjectCommand = new PutObjectCommand({
+        const request:PutObjectCommand = new PutObjectCommand({
             Body: content,
             Bucket: bucketName,
             Key: targetPath,
