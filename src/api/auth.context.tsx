@@ -1,5 +1,5 @@
 import React from 'react'
-import { Authentication } from '../api'
+import { Authentication } from './types'
 
 export type AuthContextProps = {
     state: {

@@ -1,8 +1,8 @@
 import React from 'react'
 import { Credentials, Provider } from "@aws-sdk/types";
 import { authenticateClientIdClientSecret, authenticateCognito, IdentityPoolProperties, ClientIdSecretProperties } from './auth.api'
-import { ConfigContext } from '../../context/config.context'
-import { AuthContext } from '../../context/auth.context'
+import { ConfigContext } from '../../api'
+import { AuthContext } from '../../api'
 import { Config } from '../../api'
 
 type IdentityPoolAuthProviderProps = {

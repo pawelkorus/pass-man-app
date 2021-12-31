@@ -1,7 +1,7 @@
 import React from 'react'
 import { S3RealmsConfig } from '../../aws'
 import { IdentityPoolAuthConfig, ClientIdSecretConfig } from '../../aws'
-import { ConfigContext } from '../../context/config.context'
+import { ConfigContext } from '../../api/config.context'
 import { Config } from '../../api'
 
 type ConfigProviderProps = {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Config } from '../api'
+import { Config } from './types'
 
 export type ConfigContextProps = {
     state: {

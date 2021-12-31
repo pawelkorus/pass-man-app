@@ -2,7 +2,7 @@ import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { v4 as uuidv4 } from 'uuid'
-import { useRealms, RealmDefinition } from './context/realms.context' 
+import { useRealms, RealmDefinition } from './api' 
 
 type Props = {
 }

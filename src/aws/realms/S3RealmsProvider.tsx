@@ -1,7 +1,7 @@
 import React from 'react';
-import { RealmsContext, RealmDefinition } from "../../context/realms.context"
-import { ConfigContext } from '../../context/config.context';
-import { AuthContext } from '../../context/auth.context';
+import { RealmsContext, RealmDefinition } from "../../api"
+import { ConfigContext } from '../../api/config.context';
+import { AuthContext } from '../../api/auth.context';
 import { setupRealms, fetchRealms, pushRealms, S3RealmsProperties } from './realms.api'
 import { AWSAuthentication } from '../common'
 import { Authentication, Config } from '../../api'
