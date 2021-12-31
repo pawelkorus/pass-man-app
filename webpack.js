@@ -5,10 +5,11 @@ const path = require('path');
 
 module.exports = (env, argv) => {
     const configDir = env.local? '.config-local' : '.config-dev'
+    const entryFile = './src/' + (env.local? 'index-local.tsx' : 'index.tsx')
     
     return {
         entry: {
-            'index': './src/index.tsx'
+            'index': entryFile
         },
         devtool: 'source-map',
         devServer: {
