@@ -3,7 +3,7 @@ import { RealmsContext, RealmDefinition } from "../../context/realms.context"
 import { ConfigContext } from '../../context/config.context';
 import { AuthContext } from '../../context/auth.context';
 import { setupRealms, fetchRealms, pushRealms, S3RealmsProperties } from './realms.api'
-import { AWSAuthentication } from '../api'
+import { AWSAuthentication } from '../common'
 import { Authentication, Config } from '../../api'
 
 type RealmsProviderProps = {
