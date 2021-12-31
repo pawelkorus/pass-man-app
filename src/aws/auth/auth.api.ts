@@ -1,12 +1,21 @@
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { Credentials, Provider } from "@aws-sdk/types";
-import { CognitoOptions, Credentials as Creds } from "../../config"
 
 type FragmentParams = { 
     [name: string]: string
 };
 
-export async function authenticateClientIdClientSecret(credentials:Creds):Promise<Provider<Credentials>> {  
+export type ClientIdSecretProperties = {
+    clientId: string
+    clientSecret: string
+}
+
+export type IdentityPoolProperties = {
+    identityPoolId:string,
+    clientId:string
+}
+
+export async function authenticateClientIdClientSecret(credentials:ClientIdSecretProperties):Promise<Provider<Credentials>> {  
     const prov:Provider<Credentials> = () => new Promise<Credentials>(resolve => {
                 resolve({
                     accessKeyId: credentials.clientId,
@@ -19,7 +28,7 @@ export async function authenticateClientIdClientSecret(credentials:Creds):Promis
     })
 }
 
-export const authenticateCognito = function(options:CognitoOptions):Promise<Provider<Credentials>> {
+export const authenticateCognito = function(options:IdentityPoolProperties):Promise<Provider<Credentials>> {
     const fragmentString = window.location.hash.substring(1);
     const fragmentParams:FragmentParams = {}
 

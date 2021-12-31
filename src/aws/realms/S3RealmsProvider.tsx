@@ -2,15 +2,19 @@ import React from 'react';
 import { RealmsContext, RealmDefinition } from "../../context/realms.context"
 import { ConfigContext } from '../../context/config.context';
 import { AuthContext } from '../../context/auth.context';
-import { setupRealms, fetchRealms, pushRealms } from './realms.api'
+import { setupRealms, fetchRealms, pushRealms, S3RealmsProperties } from './realms.api'
 import { AWSAuthentication } from '../api'
-import { Authentication } from '../../api'
+import { Authentication, Config } from '../../api'
 
 type RealmsProviderProps = {
     children:React.ReactNode
 }
 
-export default function ({children}:RealmsProviderProps) {
+export type S3RealmsConfig = Config & {
+    source: S3RealmsProperties
+}
+
+export function S3RealmsProvider({children}:RealmsProviderProps) {
     const actions = {actions: {
         pushRealms: pushRealmsAndUpdateState,
         addRealm: addRealm,
@@ -23,18 +27,24 @@ export default function ({children}:RealmsProviderProps) {
     React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.authentication])
     
     async function loadRealms() {
-        if(configContext.state.config && authContext.state.authentication) {
-            setupRealms(configContext.state.config.source, () => Promise.resolve(authContext.state.authentication)
-                .then(auth => {
-                    if(isAWSAuthentication(auth)) {
-                        return auth
-                    } else {
-                        throw new Error("Invalid authentication object")
-                    }
-                }))
-            let data = await fetchRealms()
-            setRealms(data)
+        if(!configContext.state.config || !authContext.state.authentication) {
+            return //skip
         }
+        
+        const config = configContext.state.config
+        if(!isS3RealmsConfig(config)) {
+            throw new Error("Invalid configuration object. Required properties not found")
+        }
+
+        setupRealms(config.source, () => Promise.resolve(authContext.state.authentication)
+            .then(auth => {
+                if(!isAWSAuthentication(auth)) {
+                    throw new Error("Unsuppported authentication object")
+                }
+                return auth
+            }))
+        let data = await fetchRealms()
+        setRealms(data)
     }
 
     async function pushRealmsAndUpdateState() {
@@ -66,6 +76,12 @@ export default function ({children}:RealmsProviderProps) {
     {children}
 </RealmsContext.Provider>
 )
+}
+
+function isS3RealmsConfig(config:Config):config is S3RealmsConfig {
+    const s3RealmsConfig = (config as S3RealmsConfig)?.source
+    return s3RealmsConfig?.bucket !== undefined
+        && s3RealmsConfig?.object !== undefined
 }
 
 function isAWSAuthentication(auth:Authentication) : auth is AWSAuthentication {

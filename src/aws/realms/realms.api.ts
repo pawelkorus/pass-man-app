@@ -1,21 +1,28 @@
 import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
-import { AWSSource } from "../../config"
 import { Credentials, Provider } from "@aws-sdk/types";
 import { RealmDefinition } from "../../context/realms.context"
 
 let resolveBackend:(backend:AWSBackend) => void
-let resolveSource:(source:AWSSource) => void
+let resolveSource:(source:S3RealmsProperties) => void
 
 const awsBackendPromise = new Promise<AWSBackend>(resolve => {
     resolveBackend = resolve
 })
 
-const awsSourcePromise = new Promise<AWSSource>(resolve => {
+const awsSourcePromise = new Promise<S3RealmsProperties>(resolve => {
     resolveSource = resolve
 })
 
-export const setupRealms = (source:AWSSource, credentials:Provider<Credentials>) => {
+
+export type S3RealmsProperties = {
+    bucket: string
+    object: string
+    endpoint?: string
+    region?:string
+}
+
+export const setupRealms = (source:S3RealmsProperties, credentials:Provider<Credentials>) => {
     resolveBackend(new AWSBackend(source, credentials))
     resolveSource(source)
 }

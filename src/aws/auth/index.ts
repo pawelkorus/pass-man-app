@@ -1,1 +1,1 @@
-export { IdentityPoolAuthProvider } from './IdentityPoolAuthProvider'
+export * from './IdentityPoolAuthProvider'

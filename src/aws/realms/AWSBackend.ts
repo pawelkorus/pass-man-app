@@ -2,13 +2,13 @@ import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3
 import { hostHeaderMiddlewareOptions } from "@aws-sdk/middleware-host-header"
 import { HttpRequest } from "@aws-sdk/protocol-http";
 import { Credentials, Provider } from "@aws-sdk/types"
-import { AWSSource } from '../../config'
+import { S3RealmsProperties } from './realms.api'
 
 export default class AWSBackend {
 
     private client:S3Client;
 
-    constructor(awsSource:AWSSource, credentials?:Provider<Credentials>) {
+    constructor(awsSource:S3RealmsProperties, credentials?:Provider<Credentials>) {
         this.client = new S3Client({
             endpoint: awsSource.endpoint,
             credentials: credentials,
