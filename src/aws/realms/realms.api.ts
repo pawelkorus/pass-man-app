@@ -1,8 +1,8 @@
 import Papa from "papaparse"
 import AWSBackend from "./AWSBackend"
-import { AWSSource } from "../config"
+import { AWSSource } from "../../config"
 import { Credentials, Provider } from "@aws-sdk/types";
-import { RealmDefinition } from "../context/realms.context"
+import { RealmDefinition } from "../../context/realms.context"
 
 let resolveBackend:(backend:AWSBackend) => void
 let resolveSource:(source:AWSSource) => void

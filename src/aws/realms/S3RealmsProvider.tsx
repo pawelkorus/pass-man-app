@@ -1,8 +1,10 @@
 import React from 'react';
-import { RealmsContext, RealmDefinition } from "../context/realms.context"
-import { ConfigContext } from '../context/config.context';
-import { AuthContext } from '../context/auth.context';
+import { RealmsContext, RealmDefinition } from "../../context/realms.context"
+import { ConfigContext } from '../../context/config.context';
+import { AuthContext } from '../../context/auth.context';
 import { setupRealms, fetchRealms, pushRealms } from './realms.api'
+import { AWSAuthentication } from '../api'
+import { Authentication } from '../../api'
 
 type RealmsProviderProps = {
     children:React.ReactNode
@@ -18,11 +20,18 @@ export default function ({children}:RealmsProviderProps) {
     const [realms, setRealms] = React.useState<RealmDefinition[]>(null)
     const configContext = React.useContext(ConfigContext)
     const authContext = React.useContext(AuthContext)
-    React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.credentials])
+    React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.authentication])
     
     async function loadRealms() {
-        if(configContext.state.config && authContext.state.credentials) {
-            setupRealms(configContext.state.config.source, () => Promise.resolve(authContext.state.credentials))
+        if(configContext.state.config && authContext.state.authentication) {
+            setupRealms(configContext.state.config.source, () => Promise.resolve(authContext.state.authentication)
+                .then(auth => {
+                    if(isAWSAuthentication(auth)) {
+                        return auth
+                    } else {
+                        throw new Error("Invalid authentication object")
+                    }
+                }))
             let data = await fetchRealms()
             setRealms(data)
         }
@@ -57,4 +66,14 @@ export default function ({children}:RealmsProviderProps) {
     {children}
 </RealmsContext.Provider>
 )
+}
+
+function isAWSAuthentication(auth:Authentication) : auth is AWSAuthentication {
+    const hasAccessKeyId = !isEmpty((auth as AWSAuthentication).accessKeyId)
+    const hasSecretAccessKey = !isEmpty((auth as AWSAuthentication).secretAccessKey)
+    return hasAccessKeyId && hasSecretAccessKey 
+}
+
+function isEmpty(str:string) {
+    return (!str || str.length === 0 );
 }

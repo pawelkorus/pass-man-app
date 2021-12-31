@@ -1,0 +1,1 @@
+export { IdentityPoolAuthProvider } from './IdentityPoolAuthProvider'

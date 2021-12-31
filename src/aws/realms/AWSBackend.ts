@@ -2,7 +2,7 @@ import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3
 import { hostHeaderMiddlewareOptions } from "@aws-sdk/middleware-host-header"
 import { HttpRequest } from "@aws-sdk/protocol-http";
 import { Credentials, Provider } from "@aws-sdk/types"
-import { AWSSource } from '../config'
+import { AWSSource } from '../../config'
 
 export default class AWSBackend {
 

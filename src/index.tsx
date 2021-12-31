@@ -4,16 +4,15 @@ import ReactDOM from 'react-dom';
 
 import App from './App';
 import { ConfigProvider } from './context/config.context'
-import { ConfigContext } from './context/config.context'
-import { AuthContext, AuthProvider } from './context/auth.context'
-import S3RealmsProvider from './aws'
+import { S3RealmsProvider } from './aws'
+import { IdentityPoolAuthProvider } from './aws'
 
 ReactDOM.render(
 <ConfigProvider> 
-    <AuthProvider>
+    <IdentityPoolAuthProvider>
         <S3RealmsProvider>
             <App/>
         </S3RealmsProvider> 
-    </AuthProvider>
+    </IdentityPoolAuthProvider>
 </ConfigProvider>, 
     document.querySelector('#root'));
