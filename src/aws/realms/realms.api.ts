@@ -22,7 +22,7 @@ export type S3RealmsProperties = {
     region?:string
 }
 
-export const setupRealms = (source:S3RealmsProperties, credentials:Provider<Credentials>) => {
+export const setupRealms = (source:S3RealmsProperties, credentials:Credentials) => {
     resolveBackend(new AWSBackend(source, credentials))
     resolveSource(source)
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { Credentials, Provider } from "@aws-sdk/types";
 import { Config, ConfigContext, AuthContext } from '../../api'
+import { AWSAuthentication } from '..';
 
 export type ClientIdSecretConfig = Config & {
     clientIdSecret: ClientIdSecretProperties 
@@ -8,23 +9,23 @@ export type ClientIdSecretConfig = Config & {
 
 export function ClientCredentialsAuthProvider({children}:ClientCredentialsAuthProviderProps) {
     const [loading, setLoading] = React.useState(true)
-    const [credentials, setCredentials] = React.useState(null)
+    const [credentials, setCredentials] = React.useState<AWSAuthentication>(null)
     const configContext = React.useContext(ConfigContext)
 
     const authenticate = async () => {
+        const config = configContext.state.config
+        
         if(!configContext.state.config) {
             return //skip
         }
         
-        let config = configContext.state.config
-        setLoading(true)
-        let auth:Provider<Credentials> = null;
-        if(isClientIdSecretConfig(config)) {
-            auth = await authenticateClientIdClientSecret(config.clientIdSecret)  
-        } else {
+        if(!isClientIdSecretConfig(config)) {
             throw new Error("Invalid configuration. Required properties not found")
         }
-        setCredentials(auth())
+        
+        const authenticationProvider = authenticateClientIdClientSecret(config.clientIdSecret)
+        const authentication = await authenticationProvider().then(validateCredentials)
+        setCredentials(authentication)
         setLoading(false)
     }
 
@@ -46,21 +47,19 @@ type ClientIdSecretProperties = {
     clientSecret: string
 }
 
+function validateCredentials(credentials:Credentials):AWSAuthentication {
+    return credentials as AWSAuthentication
+}
+
 function isClientIdSecretConfig(config:Config):config is ClientIdSecretConfig {
     const clientIdSecretProperties = (config as ClientIdSecretConfig).clientIdSecret
     return clientIdSecretProperties?.clientId !== undefined 
         && clientIdSecretProperties?.clientSecret !== undefined
 }
 
-async function authenticateClientIdClientSecret(credentials:ClientIdSecretProperties):Promise<Provider<Credentials>> {  
-    const prov:Provider<Credentials> = () => new Promise<Credentials>(resolve => {
-                resolve({
+function authenticateClientIdClientSecret(credentials:ClientIdSecretProperties):Provider<Credentials> {  
+    return () => Promise.resolve({
                     accessKeyId: credentials.clientId,
                     secretAccessKey: credentials.clientSecret
-                })
-            })
-    
-    return new Promise(resolve => {
-        resolve(prov)
-    })
+                });
 }

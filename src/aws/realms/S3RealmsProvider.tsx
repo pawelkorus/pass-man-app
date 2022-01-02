@@ -27,22 +27,22 @@ export function S3RealmsProvider({children}:RealmsProviderProps) {
     React.useEffect(() => { loadRealms() }, [configContext.state.config, authContext.state.authentication])
     
     async function loadRealms() {
-        if(!configContext.state.config || !authContext.state.authentication) {
+        const config = configContext.state.config
+        const auth = authContext.state.authentication
+        
+        if(!config || !auth) {
             return //skip
         }
         
-        const config = configContext.state.config
         if(!isS3RealmsConfig(config)) {
             throw new Error("Invalid configuration object. Required properties not found")
         }
 
-        setupRealms(config.source, () => Promise.resolve(authContext.state.authentication)
-            .then(auth => {
-                if(!isAWSAuthentication(auth)) {
-                    throw new Error("Unsuppported authentication object")
-                }
-                return auth
-            }))
+        if(!isAWSAuthentication(auth)) {
+            throw new Error("Unsuppported authentication object")
+        }
+
+        setupRealms(config.source, auth)
         let data = await fetchRealms()
         setRealms(data)
     }

@@ -2,6 +2,7 @@ import React from 'react'
 import { Credentials, Provider } from "@aws-sdk/types";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { ConfigContext, AuthContext, Config } from '../../api'
+import { AWSAuthentication } from '..';
 
 type IdentityPoolAuthProviderProps = {
     children: React.ReactNode
@@ -13,23 +14,23 @@ export type IdentityPoolAuthConfig = Config & {
 
 export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProps) {
     const [loading, setLoading] = React.useState(true)
-    const [credentials, setCredentials] = React.useState(null)
+    const [credentials, setCredentials] = React.useState<AWSAuthentication>(null)
     const configContext = React.useContext(ConfigContext)
 
     const authenticate = async () => {
-        if(!configContext.state.config) {
+        const config = configContext.state.config
+        
+        if(!config) {
             return //skip
         }
         
-        let config = configContext.state.config
-        setLoading(true)
-        let auth:Provider<Credentials> = null;
-        if(isIdentityPoolAuthConfig(config)) {
-            auth = await authenticateCognito(config.cognito)  
-        } else {
+        if(!isIdentityPoolAuthConfig(config)) {
             throw new Error("Invalid configuration. Required properties not found")
         }
-        setCredentials(auth())
+        
+        const authenticationProvider = authenticateCognito(config.cognito)
+        const authentication = await authenticationProvider().then(validateCredentials)
+        setCredentials(authentication)
         setLoading(false)
     }
 
@@ -40,6 +41,10 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
     return <AuthContext.Provider value={{state:{loading: loading, authentication: credentials}}}>
         {children}
     </AuthContext.Provider>
+}
+
+function validateCredentials(credentials:Credentials):AWSAuthentication {
+    return credentials as AWSAuthentication
 }
 
 function isIdentityPoolAuthConfig(config:Config):config is IdentityPoolAuthConfig {
@@ -57,7 +62,7 @@ type IdentityPoolProperties = {
     clientId:string
 }
 
-function authenticateCognito(options:IdentityPoolProperties):Promise<Provider<Credentials>> {
+function authenticateCognito(options:IdentityPoolProperties):Provider<Credentials> {
     const fragmentString = window.location.hash.substring(1);
     const fragmentParams:FragmentParams = {}
 
@@ -72,7 +77,7 @@ function authenticateCognito(options:IdentityPoolProperties):Promise<Provider<Cr
     if(fragmentParams["id_token"] && fragmentParams["state"] == preservedState) {
     
         window.location.hash = "";
-        return Promise.resolve(fromCognitoIdentityPool({
+        return fromCognitoIdentityPool({
             identityPoolId: options.identityPoolId,
             logins: {
                 'accounts.google.com': fragmentParams['id_token']
@@ -80,7 +85,7 @@ function authenticateCognito(options:IdentityPoolProperties):Promise<Provider<Cr
             clientConfig: {
                 region: 'eu-central-1'
             }
-        }))
+        })
 
     } else {
         
@@ -98,9 +103,7 @@ function authenticateCognito(options:IdentityPoolProperties):Promise<Provider<Cr
         
         window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?" + new URLSearchParams(authRequestParams).toString();
 
-        return new Promise(() => {
-            // never resolve -> redirecting
-        })
+        return () => Promise.reject("Redirecting browser")
     }
 }
 

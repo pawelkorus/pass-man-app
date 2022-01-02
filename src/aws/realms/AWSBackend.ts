@@ -8,7 +8,7 @@ export default class AWSBackend {
 
     private client:S3Client;
 
-    constructor(awsSource:S3RealmsProperties, credentials?:Provider<Credentials>) {
+    constructor(awsSource:S3RealmsProperties, credentials?:Credentials) {
         this.client = new S3Client({
             endpoint: awsSource.endpoint,
             credentials: credentials,
