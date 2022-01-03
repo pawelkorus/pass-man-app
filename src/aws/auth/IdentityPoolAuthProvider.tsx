@@ -50,7 +50,11 @@ function validateCredentials(credentials:Credentials):AWSAuthentication {
 function isIdentityPoolAuthConfig(config:Config):config is IdentityPoolAuthConfig {
     const identityPoolProperties = (config as IdentityPoolAuthConfig)?.cognito
     return identityPoolProperties?.identityPoolId !== undefined 
-        && identityPoolProperties?.clientId !== undefined
+        && identityPoolProperties?.provider?.name !== undefined
+        && identityPoolProperties?.provider?.authorizeEndpoint !== undefined
+        && identityPoolProperties?.provider?.clientId !== undefined
+        && identityPoolProperties?.provider?.responseType !== undefined
+        && identityPoolProperties?.provider?.scope !== undefined
 }
 
 type FragmentParams = { 
@@ -59,7 +63,13 @@ type FragmentParams = {
 
 type IdentityPoolProperties = {
     identityPoolId:string,
-    clientId:string
+    provider: {
+        name: string,
+        authorizeEndpoint: string,
+        clientId:string,
+        responseType: string,
+        scope: string
+    }
 }
 
 function authenticateCognito(options:IdentityPoolProperties):Provider<Credentials> {
@@ -80,7 +90,7 @@ function authenticateCognito(options:IdentityPoolProperties):Provider<Credential
         return fromCognitoIdentityPool({
             identityPoolId: options.identityPoolId,
             logins: {
-                'accounts.google.com': fragmentParams['id_token']
+                [options.provider.name]: fragmentParams['id_token']
             },
             clientConfig: {
                 region: 'eu-central-1'
@@ -93,15 +103,15 @@ function authenticateCognito(options:IdentityPoolProperties):Provider<Credential
         window.sessionStorage.setItem('cognito_state', state);
 
         const authRequestParams = { 
-            response_type: 'token id_token',
-            client_id: options.clientId,
+            response_type: options.provider.responseType,
+            client_id: options.provider.clientId,
             redirect_uri: window.location.origin,
-            scope: 'openid profile',
+            scope: options.provider?.scope,
             state: state,
             nonce: ''+secureRandomNumber()
         }
         
-        window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?" + new URLSearchParams(authRequestParams).toString();
+        window.location.href = options.provider.authorizeEndpoint + "?" + new URLSearchParams(authRequestParams).toString();
 
         return () => Promise.reject("Redirecting browser")
     }
