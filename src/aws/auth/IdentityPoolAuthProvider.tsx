@@ -50,6 +50,7 @@ function validateCredentials(credentials:Credentials):AWSAuthentication {
 function isIdentityPoolAuthConfig(config:Config):config is IdentityPoolAuthConfig {
     const identityPoolProperties = (config as IdentityPoolAuthConfig)?.cognito
     return identityPoolProperties?.identityPoolId !== undefined 
+        && identityPoolProperties?.region !== undefined 
         && identityPoolProperties?.provider?.name !== undefined
         && identityPoolProperties?.provider?.authorizeEndpoint !== undefined
         && identityPoolProperties?.provider?.clientId !== undefined
@@ -63,6 +64,7 @@ type FragmentParams = {
 
 type IdentityPoolProperties = {
     identityPoolId:string,
+    region: string,
     provider: {
         name: string,
         authorizeEndpoint: string,
@@ -93,7 +95,7 @@ function authenticateCognito(options:IdentityPoolProperties):Provider<Credential
                 [options.provider.name]: fragmentParams['id_token']
             },
             clientConfig: {
-                region: 'eu-central-1'
+                region: options.region
             }
         })
 
