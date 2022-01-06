@@ -2,14 +2,12 @@ import React from 'react'
 import { Credentials, Provider } from "@aws-sdk/types";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { ConfigContext, AuthContext, Config } from '../../api'
+import { IdentityPoolProperties } from './common'
+import { isIdentityPoolAuthConfig, secureRandomString, secureRandomNumber } from './private'
 import { AWSAuthentication } from '..';
 
 type IdentityPoolAuthProviderProps = {
     children: React.ReactNode
-}
-
-export type IdentityPoolAuthConfig = Config & {
-    cognito: IdentityPoolProperties
 }
 
 export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProps) {
@@ -28,7 +26,7 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
             throw new Error("Invalid configuration. Required properties not found")
         }
         
-        const authenticationProvider = authenticateCognito(config.cognito)
+        const authenticationProvider = authenticateTokenFlow(config.cognito)
         const authentication = await authenticationProvider().then(validateCredentials)
         setCredentials(authentication)
         setLoading(false)
@@ -47,34 +45,11 @@ function validateCredentials(credentials:Credentials):AWSAuthentication {
     return credentials as AWSAuthentication
 }
 
-function isIdentityPoolAuthConfig(config:Config):config is IdentityPoolAuthConfig {
-    const identityPoolProperties = (config as IdentityPoolAuthConfig)?.cognito
-    return identityPoolProperties?.identityPoolId !== undefined 
-        && identityPoolProperties?.region !== undefined 
-        && identityPoolProperties?.provider?.name !== undefined
-        && identityPoolProperties?.provider?.authorizeEndpoint !== undefined
-        && identityPoolProperties?.provider?.clientId !== undefined
-        && identityPoolProperties?.provider?.responseType !== undefined
-        && identityPoolProperties?.provider?.scope !== undefined
-}
-
 type FragmentParams = { 
     [name: string]: string
 };
 
-type IdentityPoolProperties = {
-    identityPoolId:string,
-    region: string,
-    provider: {
-        name: string,
-        authorizeEndpoint: string,
-        clientId:string,
-        responseType: string,
-        scope: string
-    }
-}
-
-function authenticateCognito(options:IdentityPoolProperties):Provider<Credentials> {
+function authenticateTokenFlow(options:IdentityPoolProperties):Provider<Credentials> {
     const fragmentString = window.location.hash.substring(1);
     const fragmentParams:FragmentParams = {}
 
@@ -117,17 +92,4 @@ function authenticateCognito(options:IdentityPoolProperties):Provider<Credential
 
         return () => Promise.reject("Redirecting browser")
     }
-}
-
-function secureRandomNumber() {
-    const array = new Uint32Array(1);
-    return window.crypto.getRandomValues(array);
-}
-
-function secureRandomString():string {
-    const validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let array = new Uint8Array(40);
-    window.crypto.getRandomValues(array);
-    array = array.map(x => validChars.charCodeAt(x % validChars.length));
-    return String.fromCharCode.apply(null, array);
 }
