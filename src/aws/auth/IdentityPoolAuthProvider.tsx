@@ -1,13 +1,45 @@
 import React from 'react'
-import { Credentials, Provider } from "@aws-sdk/types";
+import { Credentials } from "@aws-sdk/types";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
-import { ConfigContext, AuthContext, Config } from '../../api'
-import { IdentityPoolProperties } from './common'
-import { isIdentityPoolAuthConfig, secureRandomString, secureRandomNumber } from './private'
-import { AWSAuthentication } from '..';
+import { createOIDCClient, ErrorResult, IdTokenResult, IssuerConfig } from "../../oauth2";
+import { ConfigContext, AuthContext, Config } from "../../api"
+import { AWSAuthentication } from "..";
 
 type IdentityPoolAuthProviderProps = {
     children: React.ReactNode
+}
+
+export type IdentityPoolAuthConfig = Config & {
+    cognito: IdentityPoolProperties
+}
+
+type IdentityPoolProperties = {
+    identityPoolId:string,
+    region: string,
+    issuer: string | IssuerConfig
+    clientId: string,
+    grantType: "code" | "token"
+}
+
+function validateIdentityPoolAuthConfig(config:Config):config is IdentityPoolAuthConfig {
+    const identityPoolProperties = (config as IdentityPoolAuthConfig)?.cognito
+
+    return validateType<IdentityPoolProperties>(identityPoolProperties, {
+        clientId: "string",
+        identityPoolId: "string",
+        issuer: "object",
+        grantType: "string",
+        region: "string"
+    })
+}
+
+function validateType<T>(data:any, schema:Record<keyof T, string>, ): data is T {  
+    const missingProperties = Object.keys(schema)
+        .filter(key => data[key] === undefined)
+        .map(key => key as keyof T)
+        .map(key => new Error(`Document is missing ${key} ${schema[key]}`));
+
+    return missingProperties.length == 0
 }
 
 export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProps) {
@@ -22,14 +54,40 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
             return //skip
         }
         
-        if(!isIdentityPoolAuthConfig(config)) {
+        if(!validateIdentityPoolAuthConfig(config)) {
             throw new Error("Invalid configuration. Required properties not found")
         }
         
-        const authenticationProvider = authenticateTokenFlow(config.cognito)
-        const authentication = await authenticationProvider().then(validateCredentials)
-        setCredentials(authentication)
-        setLoading(false)
+        const options = config.cognito
+        const client = await createOIDCClient(options.issuer)
+        const authorizationRequest = {
+            clientId: options.clientId,
+            redirectUri: window.location.origin,
+            scope: "openid"
+        }
+        const issuerUrl = new URL(client.issuer)
+        
+        let result:IdTokenResult | ErrorResult
+        if(options.grantType == "token") {
+            result = await client.implicitFlow(authorizationRequest)
+        } else {
+            result = await client.authorizationCodeFlow(authorizationRequest)
+        }
+
+        if(result.result == "success") {
+            const awsCredentialsProvider = fromCognitoIdentityPool({
+                identityPoolId: config.cognito.identityPoolId,
+                logins: {
+                    [issuerUrl.hostname + issuerUrl.pathname]: result.idToken
+                },
+                clientConfig: {
+                    region: config.cognito.region
+                }
+            })
+            const authentication = await awsCredentialsProvider().then(validateCredentials)
+            setCredentials(authentication)
+            setLoading(false)
+        }
     }
 
     React.useEffect(() => {
@@ -43,53 +101,4 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
 
 function validateCredentials(credentials:Credentials):AWSAuthentication {
     return credentials as AWSAuthentication
-}
-
-type FragmentParams = { 
-    [name: string]: string
-};
-
-function authenticateTokenFlow(options:IdentityPoolProperties):Provider<Credentials> {
-    const fragmentString = window.location.hash.substring(1);
-    const fragmentParams:FragmentParams = {}
-
-    const regex = /([^&=]+)=([^&]*)/g;
-    let m;
-    while ((m = regex.exec(fragmentString))) {
-        fragmentParams[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
-    }
-
-    const preservedState = window.sessionStorage.getItem('cognito_state');
-
-    if(fragmentParams["id_token"] && fragmentParams["state"] == preservedState) {
-    
-        window.location.hash = "";
-        return fromCognitoIdentityPool({
-            identityPoolId: options.identityPoolId,
-            logins: {
-                [options.provider.name]: fragmentParams['id_token']
-            },
-            clientConfig: {
-                region: options.region
-            }
-        })
-
-    } else {
-        
-        const state = secureRandomString();
-        window.sessionStorage.setItem('cognito_state', state);
-
-        const authRequestParams = { 
-            response_type: options.provider.responseType,
-            client_id: options.provider.clientId,
-            redirect_uri: window.location.origin,
-            scope: options.provider?.scope,
-            state: state,
-            nonce: ''+secureRandomNumber()
-        }
-        
-        window.location.href = options.provider.authorizeEndpoint + "?" + new URLSearchParams(authRequestParams).toString();
-
-        return () => Promise.reject("Redirecting browser")
-    }
 }
