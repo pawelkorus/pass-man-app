@@ -1,3 +1,5 @@
+import { jwtVerify, createRemoteJWKSet, JWTPayload, KeyLike, JWTVerifyGetKey } from "jose"
+import { tokenToString } from "typescript";
 import { secureRandomString, generateCodeChallengeFromVerifier, IssuerConfig, AuthorizationRequest, ofIdTokenResult, 
     ofRFCErrorResult, ofUndefinedErrorResult, IdTokenResult, ErrorResult, validateRFCError, isSet, isNotSet } from "./common"
 
@@ -37,6 +39,17 @@ export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authoriz
         const idToken = responseBody.id_token as string
         const accessToken = responseBody.access_token as string
     
+        const JWKS = createRemoteJWKSet(new URL(issuerDetails.jwks_uri))
+        
+        await jwtVerify(idToken, JWKS, {
+            issuer: issuerDetails.issuer,
+            audience: authorizationRequest.clientId
+        })
+        
+        await jwtVerify(accessToken, JWKS, {
+            issuer: issuerDetails.issuer,
+        })
+
         return Promise.resolve(ofIdTokenResult(idToken, accessToken))
     } else if(isSet(error) && validateRFCError(error) && isSet(state) && state == preservedState) {
         return Promise.resolve(ofRFCErrorResult(error))

@@ -18,6 +18,7 @@
     "eslint": "^8.5.0",
     "html-webpack-plugin": "5.5.0",
     "jest": "27.4.3",
+    "jose": "4.3.8",
     "mini-css-extract-plugin": "2.4.5",
     "node-sass": "7.0.0",
     "postcss": "8.4.4",
