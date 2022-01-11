@@ -4,6 +4,7 @@ import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { createOIDCClient, ErrorResult, IdTokenResult, IssuerConfig } from "../../oauth2";
 import { ConfigContext, AuthContext, Config } from "../../api"
 import { AWSAuthentication } from "..";
+import { IdToken } from '../../oauth2/common';
 
 type IdentityPoolAuthProviderProps = {
     children: React.ReactNode
@@ -84,8 +85,8 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
                     region: config.cognito.region
                 }
             })
-            const authentication = await awsCredentialsProvider().then(validateCredentials)
-            setCredentials(authentication)
+            const congnitoIdentityCredentials = await awsCredentialsProvider()
+            setCredentials(toAuthentication(result.idToken, congnitoIdentityCredentials))
             setLoading(false)
         }
     }
@@ -99,6 +100,9 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
     </AuthContext.Provider>
 }
 
-function validateCredentials(credentials:Credentials):AWSAuthentication {
-    return credentials as AWSAuthentication
+function toAuthentication(token:IdToken, credentials:Credentials):AWSAuthentication {
+    return {
+        principal: token.sub || "",
+        ...credentials
+    }
 }

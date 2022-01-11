@@ -23,9 +23,8 @@ export function ClientCredentialsAuthProvider({children}:ClientCredentialsAuthPr
             throw new Error("Invalid configuration. Required properties not found")
         }
         
-        const authenticationProvider = authenticateClientIdClientSecret(config.clientIdSecret)
-        const authentication = await authenticationProvider().then(validateCredentials)
-        setCredentials(authentication)
+        const credentials = await authenticateClientIdClientSecret(config.clientIdSecret)()
+        setCredentials(toAuthentication(config.clientIdSecret.clientId, credentials))
         setLoading(false)
     }
 
@@ -47,8 +46,11 @@ type ClientIdSecretProperties = {
     clientSecret: string
 }
 
-function validateCredentials(credentials:Credentials):AWSAuthentication {
-    return credentials as AWSAuthentication
+function toAuthentication(clientId:string, credentials:Credentials):AWSAuthentication {
+    return {
+        principal: clientId,
+        ...credentials
+    }
 }
 
 function isClientIdSecretConfig(config:Config):config is ClientIdSecretConfig {

@@ -1,4 +1,6 @@
-export type Authentication = { __TYPE__: "Authentication" }
+export type Authentication = {
+    principal: string
+}
 
 export type Config = { __TYPE__: "Config" }
 

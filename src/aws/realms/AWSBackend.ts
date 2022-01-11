@@ -1,7 +1,7 @@
 import { S3Client, GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3"
 import { hostHeaderMiddlewareOptions } from "@aws-sdk/middleware-host-header"
 import { HttpRequest } from "@aws-sdk/protocol-http";
-import { Credentials, Provider } from "@aws-sdk/types"
+import { Credentials } from "@aws-sdk/types"
 import { S3RealmsProperties } from './realms.api'
 
 export default class AWSBackend {
@@ -44,7 +44,8 @@ export default class AWSBackend {
             return toString(Body as ReadableStream | Blob)
         } catch(error) {
             const { httpStatusCode } = error.$metadata
-            if(404 == httpStatusCode) {
+            // accomodate situations when user don't have ListBucket permissions
+            if(404 == httpStatusCode || 403 == httpStatusCode) {
                 return ''
             } else {
                 throw error
