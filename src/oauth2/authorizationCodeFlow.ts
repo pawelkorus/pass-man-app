@@ -1,7 +1,6 @@
-import { jwtVerify, createRemoteJWKSet, JWTPayload, KeyLike, JWTVerifyGetKey } from "jose"
-import { tokenToString } from "typescript";
+import { jwtVerify, createRemoteJWKSet, JWTPayload } from "jose"
 import { secureRandomString, generateCodeChallengeFromVerifier, IssuerConfig, AuthorizationRequest, ofIdTokenResult, 
-    ofRFCErrorResult, ofUndefinedErrorResult, IdTokenResult, ErrorResult, validateRFCError, isSet, isNotSet } from "./common"
+    ofRFCErrorResult, ofUndefinedErrorResult, IdTokenResult, ErrorResult, validateRFCError, isSet, isNotSet, IdToken } from "./common"
 
 export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authorizationRequest:AuthorizationRequest): Promise<IdTokenResult | ErrorResult> {
     const queryParams = new URLSearchParams(window.location.search)
@@ -41,7 +40,7 @@ export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authoriz
     
         const JWKS = createRemoteJWKSet(new URL(issuerDetails.jwks_uri))
         
-        await jwtVerify(idToken, JWKS, {
+        const { payload } = await jwtVerify(idToken, JWKS, {
             issuer: issuerDetails.issuer,
             audience: authorizationRequest.clientId
         })
@@ -50,7 +49,7 @@ export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authoriz
             issuer: issuerDetails.issuer,
         })
 
-        return Promise.resolve(ofIdTokenResult(idToken, accessToken))
+        return Promise.resolve(ofIdTokenResult(toIdToken(payload, idToken), accessToken))
     } else if(isSet(error) && validateRFCError(error) && isSet(state) && state == preservedState) {
         return Promise.resolve(ofRFCErrorResult(error))
     } else if(isSet(error) && !validateRFCError(error) && isSet(state) && state == preservedState) {
@@ -79,5 +78,11 @@ export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authoriz
         window.location.href = issuerDetails.authorization_endpoint + "?" + new URLSearchParams(authRequestParams).toString();
 
         return Promise.reject("Redirecting browser")
+    }
+}
+
+function toIdToken(payload:JWTPayload, rawToken:string):IdToken {
+    return {
+        ...{ rawToken: rawToken }, ...payload
     }
 }

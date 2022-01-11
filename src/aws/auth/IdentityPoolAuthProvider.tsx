@@ -78,7 +78,7 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
             const awsCredentialsProvider = fromCognitoIdentityPool({
                 identityPoolId: config.cognito.identityPoolId,
                 logins: {
-                    [issuerUrl.hostname + issuerUrl.pathname]: result.idToken
+                    [issuerUrl.hostname + issuerUrl.pathname]: result.idToken.rawToken
                 },
                 clientConfig: {
                     region: config.cognito.region

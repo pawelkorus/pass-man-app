@@ -1,5 +1,6 @@
+import { jwtVerify, createRemoteJWKSet, JWTPayload } from "jose"
 import { IssuerConfig, AuthorizationRequest, IdTokenResult, ErrorResult, secureRandomNumber, secureRandomString, 
-    ofIdTokenResult, ofRFCErrorResult, ofUndefinedErrorResult, isSet, isNotSet, validateRFCError } from "./common"
+    ofIdTokenResult, ofRFCErrorResult, ofUndefinedErrorResult, isSet, isNotSet, validateRFCError, IdToken } from "./common"
 
 type FragmentParams = { 
     [name: string]: string
@@ -22,7 +23,18 @@ export async function implicitFlow(issuerDetails:IssuerConfig, authorizationRequ
     const preservedState = window.sessionStorage.getItem('cognito_state');
 
     if(isNotSet(error) && isSet(idToken) && isSet(accessToken) && isSet(state) && state == preservedState) {
-        return Promise.resolve(ofIdTokenResult(fragmentParams["id_token"], fragmentParams["access_token"]))
+        const JWKS = createRemoteJWKSet(new URL(issuerDetails.jwks_uri))
+
+        const { payload } = await jwtVerify(idToken, JWKS, {
+            issuer: issuerDetails.issuer,
+            audience: authorizationRequest.clientId
+        })
+        
+        await jwtVerify(accessToken, JWKS, {
+            issuer: issuerDetails.issuer,
+        })
+
+        return Promise.resolve(ofIdTokenResult(toIdToken(payload, idToken), accessToken))
     } else if(isSet(error) && validateRFCError(error) && isSet(state) && state == preservedState) {
         return Promise.resolve(ofRFCErrorResult(error)) 
     } else if(isSet(error) && !validateRFCError(error) && isSet(state) && state == preservedState) {
@@ -45,5 +57,11 @@ export async function implicitFlow(issuerDetails:IssuerConfig, authorizationRequ
         window.location.href = issuerDetails.token_endpoint + "?" + new URLSearchParams(authRequestParams).toString();
 
         return Promise.reject("Redirecting browser")
+    }
+}
+
+function toIdToken(payload:JWTPayload, rawToken:string):IdToken {
+    return {
+        ...{ rawToken: rawToken }, ...payload
     }
 }

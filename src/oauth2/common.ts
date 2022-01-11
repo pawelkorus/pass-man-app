@@ -81,9 +81,18 @@ export type AuthorizationRequest = ClientDetals & {
 
 export type AccessTokenResult = {result: "success", accessToken: string}
 
-export type IdTokenResult = AccessTokenResult & {idToken: string}
-export function ofIdTokenResult(idToken:string, accessToken:string):IdTokenResult {
-    return {result: "success", idToken: idToken, accessToken: accessToken} as IdTokenResult
+export type IdToken = {
+    rawToken: string,
+    sub?: string,
+    [claim:string]:unknown
+}
+
+export type IdTokenResult = AccessTokenResult & {idToken: IdToken}
+export function ofIdTokenResult(idToken:IdToken, accessToken:string):IdTokenResult {
+    return {result: "success", 
+        idToken: idToken,
+        accessToken: accessToken
+    } as IdTokenResult
 }
 
 export type ErrorResult = {result: "fail", reason:RFCError | string}
