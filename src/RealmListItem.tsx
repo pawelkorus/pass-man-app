@@ -63,7 +63,7 @@ export default (props:Props):JSX.Element => {
             onChange={handleItemChanged.bind(this, "tags", props.item)}
         />
         : <div>
-            {props.item.tags.map(t => <Badge key={t} className="mx-1" variant="info">{t}</Badge>)
+            {props.item.tags.map(t => <Badge key={t} className="mx-1" bg="info">{t}</Badge>)
             }
         </div>
     }

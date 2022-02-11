@@ -42,9 +42,11 @@ export const RealmTagsInput:React.FC<Props> = props => {
     multiple
     defaultSelected={props.tags.map(v => { return {value: v}})}
     options={allTags.map(v => { return {value: v}})}
-    placeholder="Add tag"
     allowNew
-    onChange={handleOnChange}/>    
+    onChange={handleOnChange}
+    isLoading={false}
+    autoFocus={false}
+    />    
     )
 }
 

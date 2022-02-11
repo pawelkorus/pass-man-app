@@ -5,3 +5,18 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts/";
 @import '~@fortawesome/fontawesome-free/scss/solid.scss';
 
 @import 'react-bootstrap-typeahead/css/Typeahead.css';
+
+
+// the class override "hack" for BS5 - remove after react-bootstrap-typeahead compatible with BS5
+.rbt {
+    & .rbt-close {
+        margin-top: unset;
+        @extend .btn-close; // inherit all the properties of the bootstrap class `.btn-close`
+        pointer-events: auto; /* Override pointer-events: none; above */
+        span {
+            display: none;  // hide the BS4 compatible span element
+        }
+        background-size: 0.6em;
+        top: 0
+    }
+}
