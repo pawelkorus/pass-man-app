@@ -83,7 +83,7 @@ module.exports = (env, argv) => {
             }
         },
         output: {
-            filename: '[name].bundle.js',
+            filename: '[name].bundle.[contenthash].js',
             path: path.resolve(__dirname, 'target')
         },
         plugins: [
