@@ -6,17 +6,26 @@ $fa-font-path: "~@fortawesome/fontawesome-free/webfonts/";
 
 @import 'react-bootstrap-typeahead/css/Typeahead.css';
 
+// temporary fix for incorrect close button display
+// see https://stackoverflow.com/a/67875597
+.close ::before{
+    content: 'X';
+    visibility: visible;
+    color: "black";
+    margin: -4px;
+}
 
-// the class override "hack" for BS5 - remove after react-bootstrap-typeahead compatible with BS5
-.rbt {
-    & .rbt-close {
-        margin-top: unset;
-        @extend .btn-close; // inherit all the properties of the bootstrap class `.btn-close`
-        pointer-events: auto; /* Override pointer-events: none; above */
-        span {
-            display: none;  // hide the BS4 compatible span element
-        }
-        background-size: 0.6em;
-        top: 0
-    }
+.sr-only::before{
+    visibility: hidden;
+}
+
+.close{
+    /*background-color: red; */
+    visibility: hidden;
+    position: absolute;
+    right: 32px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(247, 12, 12, 0.5);
 }

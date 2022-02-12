@@ -90,18 +90,16 @@ export default ({}:Props):JSX.Element => {
         </div>
     </Navbar>
 
-    <div className="flex-fill">
     {loading?
-        <div className="mx-auto my-auto">
-            <Spinner animation="border" role="status">
-                <span className="sr-only">Loading...</span>
-            </Spinner>
-        </div>
-        : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
-                        onItemRemoved={handleItemRemoved} 
-                        onItemChanged={handleItemChanged}></RealmList>
-    }
+    <div className="mx-auto my-auto">
+        <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+        </Spinner>
     </div>
+    : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
+                    onItemRemoved={handleItemRemoved} 
+                    onItemChanged={handleItemChanged}></RealmList>
+    }
 </div>
     )
 }
