@@ -1,5 +1,4 @@
-import { unmountComponentAtNode } from 'react-dom'
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import RealmList from "../src/RealmList"
 import React from 'react';
 import { RealmDefinition } from '../src/api'
