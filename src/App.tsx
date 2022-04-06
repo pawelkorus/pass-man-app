@@ -3,6 +3,7 @@ import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner
 import RealmList from './RealmList'
 import { v4 as uuidv4 } from 'uuid'
 import { useRealms, RealmDefinition } from './api' 
+import { EncryptionProvider } from "./service"
 
 type Props = {
 }
@@ -96,9 +97,12 @@ export default ({}:Props):JSX.Element => {
             <span className="sr-only">Loading...</span>
         </Spinner>
     </div>
-    : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
+    : 
+    <EncryptionProvider>
+        <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
                     onItemRemoved={handleItemRemoved} 
                     onItemChanged={handleItemChanged}></RealmList>
+    </EncryptionProvider>
     }
 </div>
     )
