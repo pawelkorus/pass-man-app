@@ -1,7 +1,6 @@
 {
   "name": "pass-man",
   "version": "1.0.0",
-  "sideEffects": false,
   "devDependencies": {
     "@testing-library/react": "13.0.0",
     "@types/jest": "27.4.1",

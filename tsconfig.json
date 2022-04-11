@@ -1,13 +1,13 @@
 {
     "compilerOptions": {
-        "outDir": "dist/",
+        "outDir": "target/",
         "sourceMap": true,
         "noImplicitAny": true,
         "target": "es5",
         "allowJs": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
-        "module": "commonjs",
+        "module": "es2020",
         "importHelpers": true,
         "jsx": "react",
         "downlevelIteration": true
