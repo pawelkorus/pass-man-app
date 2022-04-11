@@ -1,11 +1,13 @@
 import React from 'react';
-import { EncryptionContext } from "../../api" 
+import { EncryptionContext } from "../../api"
 
 type ProviderProps = {
     children:React.ReactNode
 }
 
 export function EncryptionProvider(props:ProviderProps) {
+    const worker = new Worker(new URL("./worker.ts", import.meta.url));
+
     const actions = {
         encrypt: (data:Uint8Array):Uint8Array => {
             return data
@@ -14,7 +16,9 @@ export function EncryptionProvider(props:ProviderProps) {
             return data
         },
         usePassphrase: (passphrase:String) => {
-            console.info("use passphrase")
+            console.info("use passphrase " + passphrase + ".")
+
+            worker.postMessage({a: "testMessage"})
         }
     }
 
