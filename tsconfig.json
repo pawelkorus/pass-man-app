@@ -10,6 +10,7 @@
         "module": "es2020",
         "importHelpers": true,
         "jsx": "react",
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "lib": ["DOM", "WebWorker"]
     }
 }

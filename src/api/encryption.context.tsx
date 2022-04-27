@@ -1,7 +1,7 @@
 import React from 'react'
 
-export type Encryptor = (data:Uint8Array) => Uint8Array
-export type Decryptor = (data:Uint8Array) => Uint8Array
+export type Encryptor = (data:Uint8Array) => Promise<Uint8Array>
+export type Decryptor = (data:Uint8Array) => Promise<Uint8Array>
 
 export type EncryptionContextProps = {
     state: {
@@ -10,7 +10,7 @@ export type EncryptionContextProps = {
     actions: {
         encrypt: Encryptor
         decrypt: Decryptor
-        usePassphrase: (passphrase:String) => void
+        usePassphrase: (passphrase:String) => Promise<void>
     }
 }
 
@@ -21,14 +21,15 @@ export const EncryptionContext = React.createContext<EncryptionContextProps>({
     actions: {
         encrypt: (data) => {
             console.debug("encrypt data")
-            return data
+            return Promise.resolve(data)
         },
         decrypt: (data) => {
             console.debug("decrypt data")
-            return data
+            return Promise.resolve(data)
         },
         usePassphrase: (passphrase:String) => {
             console.debug("set passphrase " + passphrase)
+            return Promise.resolve()
         }
     }
 })
