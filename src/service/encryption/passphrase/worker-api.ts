@@ -1,5 +1,16 @@
-export type PassphraseEvent = {
+export type ErrorResponse = {
+    __TYPE__: "ErrorResponse"
+    name: String
+    message: String
+}
+
+export type SetPassphraseRequest = {
+    __TYPE__: "SetPassphraseRequest"
     passphrase: String
+}
+
+export type SetPassphraseResponse = {
+    __TYPE__: "SetPassphraseResponse"
 }
 
 export type EncryptRequest = {
@@ -22,14 +33,30 @@ export type DecryptResponse = {
     decryptedValue: Uint8Array
 }
 
-export function isPassphraseEvent(event:PassphraseEvent):event is PassphraseEvent {
-    return (event as PassphraseEvent).passphrase !== undefined
+export function isErrorResponse(event:ErrorResponse):event is ErrorResponse {
+    return event.__TYPE__ === "ErrorResponse"
+}
+
+export function isSetPassphraseRequest(event:SetPassphraseRequest):event is SetPassphraseRequest {
+    return event.__TYPE__ === "SetPassphraseRequest"
+}
+
+export function isSetPassphraseResponse(event:SetPassphraseResponse):event is SetPassphraseResponse {
+    return event.__TYPE__ === "SetPassphraseResponse"
 }
 
 export function isEncryptRequest(event:EncryptRequest):event is EncryptRequest {
-    return (event as EncryptRequest).__TYPE__ !== "EncryptRequest"
+    return event.__TYPE__ === "EncryptRequest"
+}
+
+export function isEncryptResponse(event:EncryptResponse):event is EncryptResponse {
+    return event.__TYPE__ === "EncryptResponse"
 }
 
 export function isDecryptRequest(event:DecryptRequest):event is DecryptRequest {
-    return (event as DecryptRequest).__TYPE__ == "DecryptRequest"
+    return event.__TYPE__ === "DecryptRequest"
+}
+
+export function isDecryptResponse(event:DecryptResponse):event is DecryptResponse {
+    return event.__TYPE__ === "DecryptResponse"
 }
