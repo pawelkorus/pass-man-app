@@ -12,18 +12,9 @@ const worker = new Worker(new URL("./worker.ts", import.meta.url));
 
 export function PassphraseEncryptionProvider(props:ProviderProps) {
     const actions = {
-        encrypt: (data:Uint8Array):Promise<Uint8Array> => {
-            worker.postMessage({ uncryptedValue: utf8Encode.encode("alamakota") } as EncryptRequest)
-            return Promise.resolve(data)
-        },
-        decrypt: (data:Uint8Array):Promise<Uint8Array> => {
-            worker.postMessage({ encyptedValue: utf8Encode.encode("alamakota") } as DecryptRequest)
-            return Promise.resolve(data)
-        },
-        usePassphrase: (passphrase:String):Promise<void> => {
-            worker.postMessage({ passphrase: passphrase } as SetPassphraseRequest)
-            return Promise.resolve()
-        }
+        encrypt: encrypt,
+        decrypt: decrypt,
+        usePassphrase: usePassphrase
     }
 
     return (
@@ -31,4 +22,19 @@ export function PassphraseEncryptionProvider(props:ProviderProps) {
     {props.children}
 </EncryptionContext.Provider>
     )
+}
+
+export function encrypt(data:Uint8Array):Promise<Uint8Array> {
+    worker.postMessage({ uncryptedValue: utf8Encode.encode("alamakota") } as EncryptRequest)
+    return Promise.resolve(data)
+}
+
+export function decrypt(data:Uint8Array):Promise<Uint8Array> {
+    worker.postMessage({ encyptedValue: utf8Encode.encode("alamakota") } as DecryptRequest)
+    return Promise.resolve(data)
+}
+
+export function usePassphrase(passphrase:String):Promise<void> {
+    worker.postMessage({ passphrase: passphrase } as SetPassphraseRequest)
+    return Promise.resolve()
 }
