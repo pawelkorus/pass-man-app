@@ -14,6 +14,7 @@ module.exports = (env, argv) => {
         devtool: 'source-map',
         devServer: {
             host: '0.0.0.0',
+            server: 'https',
             static: [path.resolve(__dirname, 'target'), path.resolve(__dirname, configDir)]
         },
         optimization: { 

@@ -65,7 +65,7 @@ export function validateType<T>(data:any, schema:Record<keyof T, string>, ): dat
     const missingProperties = Object.keys(schema)
         .filter(key => data[key] === undefined)
         .map(key => key as keyof T)
-        .map(key => new Error(`Document is missing ${key} ${schema[key]}`));
+        .map(key => new Error(`Document is missing ${String(key)} ${schema[key]}`));
 
     return missingProperties.length == 0
 }
