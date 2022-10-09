@@ -2,8 +2,7 @@ import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { v4 as uuidv4 } from 'uuid'
-import { useRealms, RealmDefinition } from './api' 
-import { EncryptionProvider } from "./service"
+import { useRealms, RealmDefinition } from './api'
 
 type Props = {
 }
@@ -98,11 +97,9 @@ export default ({}:Props):JSX.Element => {
         </Spinner>
     </div>
     : 
-    <EncryptionProvider>
-        <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
-                    onItemRemoved={handleItemRemoved} 
-                    onItemChanged={handleItemChanged}></RealmList>
-    </EncryptionProvider>
+    <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
+                onItemRemoved={handleItemRemoved} 
+                onItemChanged={handleItemChanged}></RealmList>
     }
 </div>
     )

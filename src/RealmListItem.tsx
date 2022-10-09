@@ -10,30 +10,51 @@ type Props = {
     onItemRemoved?:(item:RealmDefinition) => void
 }
 
+type FormData = {
+    id: string,
+    realm: string,
+    username: string,
+    password: string,
+    tags: string[]
+}
+
 export default (props:Props):JSX.Element => {
     const textEncoder = new TextEncoder()
     const textDecoder = new TextDecoder()
     const encryptionContext = useEncryption()
     var [editEnabled, setEditEnabled] = React.useState(false)
     var [editData, setEditData] = React.useState<RealmDefinition | undefined>(undefined)
+    var [realm, setRealm] = React.useState<String | undefined>(undefined)
+    var [formData, setFormData] = React.useState<FormData | undefined>(undefined)
 
-    function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string|string[]) {
-        if(field == 'tags') {
-            item[field] = newValue as string[]
-        } else if(field == 'persisted') {
-            // skip
-        } else {
-            item[field] = newValue as string
-        }
+    // function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string|string[]) {
+    //     if(field == 'tags') {
+    //         item[field] = newValue as string[]
+    //     } else if(field == 'persisted') {
+    //         // skip
+    //     } else {
+    //         item[field] = newValue as string
+    //     }
+    // }
+    function handleItemChanged(field: keyof FormData, item:FormData, newValue:string|string[]) {
+
     }
 
     function handleEnableEdit() {
-        setEditData(decrypt(props.item))
+        // setEditData(decrypt(props.item))
+        setRealm(props.item.realm)
+        
         setEditEnabled(true)
     }
 
     function handleSaveItem(item:RealmDefinition) {
         setEditEnabled(false)
+        // Promise.resolve(item)
+        //     .then((v : RealmDefinition) => {
+        //         return Promise.all(
+                    
+        //         )
+        //     })
         props?.onItemChanged(encrypt(editData))
     }
 
@@ -50,8 +71,10 @@ export default (props:Props):JSX.Element => {
             id: source.id,
             persisted: source.persisted,
             realm: source.realm,
-            username: uint8ToStr(encryptionContext.actions.decrypt(strToUint8(source.username))),
-            password: uint8ToStr(encryptionContext.actions.decrypt(strToUint8(source.password))),
+            // username: uint8ToStr(encryptionContext.actions.decrypt(strToUint8(source.username))),
+            // password: uint8ToStr(encryptionContext.actions.decrypt(strToUint8(source.password))),
+            username: source.username,
+            password: source.password,
             tags: [].concat(source.tags)
         }
     }
@@ -61,8 +84,10 @@ export default (props:Props):JSX.Element => {
             id: source.id,
             persisted: source.persisted,
             realm: source.realm,
-            username: uint8ToStr(encryptionContext.actions.encrypt(strToUint8(source.username))),
-            password: uint8ToStr(encryptionContext.actions.encrypt(strToUint8(source.password))),
+            // username: uint8ToStr(encryptionContext.actions.encrypt(strToUint8(source.username))),
+            // password: uint8ToStr(encryptionContext.actions.encrypt(strToUint8(source.password))),
+            username: source.username,
+            password: source.password,
             tags: [].concat(source.tags)
         }
     }
@@ -72,33 +97,33 @@ export default (props:Props):JSX.Element => {
     <Col xs="3" className="text-break">
     {editEnabled?
         <FormControl 
-            defaultValue={editData.realm}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("realm", editData, e.target.value)}></FormControl>
-        : props.item.realm
+            defaultValue={formData.realm}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("realm", formData, e.target.value)}></FormControl>
+        : realm
     }
     </Col>
     <Col className="text-break">
     {editEnabled?
         <FormControl 
-            defaultValue={editData.username}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("username", editData, e.target.value)}></FormControl>
+            defaultValue={formData.username}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("username", formData, e.target.value)}></FormControl>
         : props.item.username
     }
     </Col>
     <Col className="text-break">
     {editEnabled?
         <FormControl 
-            defaultValue={editData.password}
-            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("password", editData, e.target.value)}></FormControl>
+            defaultValue={formData.password}
+            onBlur={(e:React.FocusEvent<HTMLInputElement>) => handleItemChanged("password", formData, e.target.value)}></FormControl>
         : props.item.password
     }
     </Col>
     <Col xs="3" className="text-break">
     {editEnabled?
         <RealmTagsInput
-            id={"tags-field-" + editData.id}
-            tags={editData.tags}
-            onChange={handleItemChanged.bind(this, "tags", editData)}
+            id={"tags-field-" + formData.id}
+            tags={formData.tags}
+            onChange={handleItemChanged.bind(this, "tags", formData)}
         />
         : <div>
             {props.item.tags.map(t => <Badge key={t} className="mx-1" bg="info">{t}</Badge>)
