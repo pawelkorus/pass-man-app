@@ -14,6 +14,55 @@ exports[`should render RealmList 1`] = `
           <div
             class="text-break col-3"
           >
+            realm3
+          </div>
+          <div
+            class="text-break col"
+          >
+            username3
+          </div>
+          <div
+            class="text-break col"
+          >
+            password3
+          </div>
+          <div
+            class="text-break col-3"
+          >
+            <div />
+          </div>
+          <div
+            class="col-sm-auto"
+          >
+            <div
+              class="btn-group"
+              role="group"
+            >
+              <button
+                class="btn btn-primary"
+                type="button"
+              >
+                <i
+                  class="fas fa-edit"
+                />
+              </button>
+              <button
+                class="btn btn-danger"
+                type="button"
+              >
+                <i
+                  class="fas fa-trash-alt"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="align-items-center border-bottom pt-2 pb-2 row"
+        >
+          <div
+            class="text-break col-3"
+          >
             realm1
           </div>
           <div
@@ -106,55 +155,6 @@ exports[`should render RealmList 1`] = `
             </div>
           </div>
         </div>
-        <div
-          class="align-items-center border-bottom pt-2 pb-2 row"
-        >
-          <div
-            class="text-break col-3"
-          >
-            realm3
-          </div>
-          <div
-            class="text-break col"
-          >
-            username3
-          </div>
-          <div
-            class="text-break col"
-          >
-            password3
-          </div>
-          <div
-            class="text-break col-3"
-          >
-            <div />
-          </div>
-          <div
-            class="col-sm-auto"
-          >
-            <div
-              class="btn-group"
-              role="group"
-            >
-              <button
-                class="btn btn-primary"
-                type="button"
-              >
-                <i
-                  class="fas fa-edit"
-                />
-              </button>
-              <button
-                class="btn btn-danger"
-                type="button"
-              >
-                <i
-                  class="fas fa-trash-alt"
-                />
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </body>,
@@ -162,6 +162,55 @@ exports[`should render RealmList 1`] = `
     <div
       class="container"
     >
+      <div
+        class="align-items-center border-bottom pt-2 pb-2 row"
+      >
+        <div
+          class="text-break col-3"
+        >
+          realm3
+        </div>
+        <div
+          class="text-break col"
+        >
+          username3
+        </div>
+        <div
+          class="text-break col"
+        >
+          password3
+        </div>
+        <div
+          class="text-break col-3"
+        >
+          <div />
+        </div>
+        <div
+          class="col-sm-auto"
+        >
+          <div
+            class="btn-group"
+            role="group"
+          >
+            <button
+              class="btn btn-primary"
+              type="button"
+            >
+              <i
+                class="fas fa-edit"
+              />
+            </button>
+            <button
+              class="btn btn-danger"
+              type="button"
+            >
+              <i
+                class="fas fa-trash-alt"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
       <div
         class="align-items-center border-bottom pt-2 pb-2 row"
       >
@@ -228,55 +277,6 @@ exports[`should render RealmList 1`] = `
           class="text-break col"
         >
           password2
-        </div>
-        <div
-          class="text-break col-3"
-        >
-          <div />
-        </div>
-        <div
-          class="col-sm-auto"
-        >
-          <div
-            class="btn-group"
-            role="group"
-          >
-            <button
-              class="btn btn-primary"
-              type="button"
-            >
-              <i
-                class="fas fa-edit"
-              />
-            </button>
-            <button
-              class="btn btn-danger"
-              type="button"
-            >
-              <i
-                class="fas fa-trash-alt"
-              />
-            </button>
-          </div>
-        </div>
-      </div>
-      <div
-        class="align-items-center border-bottom pt-2 pb-2 row"
-      >
-        <div
-          class="text-break col-3"
-        >
-          realm3
-        </div>
-        <div
-          class="text-break col"
-        >
-          username3
-        </div>
-        <div
-          class="text-break col"
-        >
-          password3
         </div>
         <div
           class="text-break col-3"

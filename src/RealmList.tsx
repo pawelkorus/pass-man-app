@@ -11,9 +11,16 @@ type Props = {
 }
 
 export default (props:Props):React.ReactElement => {
+    
+    function notPersistedFirst(left:RealmDefinition, right:RealmDefinition) {
+        if(left.persisted && !right.persisted) return 1
+        else if(left.persisted == right.persisted) return 0
+        else return -1
+    }
+ 
     return (
 <Container>
-    { props.items.map(item => 
+    { props.items.sort(notPersistedFirst).map(item => 
     <RealmListItem
         key={item.id}
         item={item}
