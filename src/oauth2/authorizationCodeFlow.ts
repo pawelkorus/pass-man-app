@@ -10,6 +10,8 @@ export async function authorizationCodeFlow(issuerDetails:IssuerConfig, authoriz
     const error = queryParams.get("error")
     const codeVerifier = window.sessionStorage.getItem("oauth2_code_verifier")
 
+    history.replaceState(null, null, '/')
+
     if(isSet(code) && isSet(state) && state == preservedState && isSet(codeVerifier)) {
         const bodyParams = new URLSearchParams({
             grant_type: "authorization_code",
