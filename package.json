@@ -30,6 +30,7 @@
     "ts-loader": "9.4.1",
     "typescript": "4.8.4",
     "webpack": "5.74.0",
+    "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.11.1"
   },
@@ -39,7 +40,8 @@
   "scripts": {
     "build-prod": "webpack --mode production --config webpack.js",
     "build-debug": "webpack --mode development --config webpack.js",
-    "develop-dev": "webpack serve --mode development --https --config webpack.js",
+    "develop-prod": "webpack serve --mode production --https --config webpack.js",
+    "develop-debug": "webpack serve --mode development --https --config webpack.js",
     "develop-local": "webpack serve --mode development --https --env local --config webpack.js",
     "test": "jest",
     "lint": "eslint . --ext .ts",
