@@ -40,9 +40,9 @@
   "scripts": {
     "build-prod": "webpack --mode production --config webpack.js",
     "build-debug": "webpack --mode development --config webpack.js",
-    "develop-prod": "webpack serve --mode production --https --config webpack.js",
-    "develop-debug": "webpack serve --mode development --https --config webpack.js",
-    "develop-local": "webpack serve --mode development --https --env local --config webpack.js",
+    "develop-prod": "webpack serve --mode production --config webpack.js",
+    "develop-debug": "webpack serve --mode development --config webpack.js",
+    "develop-local": "webpack serve --mode development --env local --config webpack.js",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix"
