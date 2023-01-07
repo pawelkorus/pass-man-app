@@ -1,5 +1,5 @@
 import React from 'react';
-import { RealmsContext, RealmDefinition } from "../../api"
+import { RealmsContext, RealmDefinition, State } from "../../api"
 import { ConfigContext } from '../../api/config.context';
 import { AuthContext } from '../../api/auth.context';
 import { setupRealms, fetchRealms, pushRealms, S3RealmsProperties } from './realms.api'
@@ -21,6 +21,7 @@ export function S3RealmsProvider({children}:RealmsProviderProps) {
         removeRealm: removeRealm,
         updateRealm: updateRealm      
     }}
+    const [state, setState] = React.useState<State>(State.LOADING)
     const [realms, setRealms] = React.useState<RealmDefinition[]>(null)
     const configContext = React.useContext(ConfigContext)
     const authContext = React.useContext(AuthContext)
@@ -45,11 +46,14 @@ export function S3RealmsProvider({children}:RealmsProviderProps) {
         setupRealms(config.source, auth)
         let data = await fetchRealms()
         setRealms(data)
+        setState(State.READY)
     }
 
     async function pushRealmsAndUpdateState() {
+        setState(State.SAVING)
         let storedRealms = await pushRealms(realms)
         setRealms(storedRealms)
+        setState(State.READY)
     }
 
     function addRealm(realm:RealmDefinition) {
@@ -72,7 +76,7 @@ export function S3RealmsProvider({children}:RealmsProviderProps) {
     }
 
     return (
-<RealmsContext.Provider value={{...{ state:{ realms:realms }}, ...actions}}>
+<RealmsContext.Provider value={{...{ state:{ state: state, realms:realms }}, ...actions}}>
     {children}
 </RealmsContext.Provider>
 )

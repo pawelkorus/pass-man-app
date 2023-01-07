@@ -2,26 +2,20 @@ import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { v4 as uuidv4 } from 'uuid'
-import { useRealms, RealmDefinition } from './api' 
+import { useRealms, RealmDefinition, State } from './api' 
 
 type Props = {
 }
 
 export default ({}:Props):JSX.Element => {
     var [filter, setFilter] = React.useState('')
-    var [loading, setLoading] = React.useState(true)
     var realmsContext = useRealms()
-    React.useEffect(componentDidMount, [realmsContext.state.realms])
-
-    function componentDidMount() {
-        if(realmsContext.state.realms && loading) {
-            setLoading(false)
-        }
-    }
 
     function handleSaveOnClick(e:React.MouseEvent) {
         e.preventDefault();
+        // setState((cur, propse):State => { State.SAVING } ,   )
         realmsContext.actions.pushRealms()
+        // setState(State.READY)
     }
 
     function handleAddBtnOnClick(e:React.MouseEvent) {
@@ -65,6 +59,27 @@ export default ({}:Props):JSX.Element => {
         return false
     }
 
+    var content = (<div className="mx-auto my-auto">
+            <Spinner animation="border" role="status">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+        </div>
+    )
+
+    if(realmsContext.state.state == State.SAVING) {
+        content = (<div className="mx-auto my-auto">
+                <Spinner animation="border" role="status">
+                    <span className="sr-only">Saving...</span>
+                </Spinner>
+            </div>
+        )
+    } else if(realmsContext.state.state == State.READY) {
+        content = (<RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
+            onItemRemoved={handleItemRemoved} 
+            onItemChanged={handleItemChanged}></RealmList>
+        )
+    }
+
     return (
 <div className="container-fluid h-100 d-flex flex-column">
     <Navbar expand="md" className="bg-light justify-content-between">
@@ -90,16 +105,7 @@ export default ({}:Props):JSX.Element => {
         </div>
     </Navbar>
 
-    {loading?
-    <div className="mx-auto my-auto">
-        <Spinner animation="border" role="status">
-            <span className="sr-only">Loading...</span>
-        </Spinner>
-    </div>
-    : <RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
-                    onItemRemoved={handleItemRemoved} 
-                    onItemChanged={handleItemChanged}></RealmList>
-    }
+    {content}
 </div>
     )
 }

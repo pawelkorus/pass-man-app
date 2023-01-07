@@ -1,8 +1,15 @@
 import React from 'react';
 import { RealmDefinition } from './types';
 
+export enum State {
+    LOADING,
+    SAVING,
+    READY
+}
+
 export type RealmsContextProps = {
     state: {
+        state: State,
         realms:RealmDefinition[]
     },
     actions: {
@@ -15,6 +22,7 @@ export type RealmsContextProps = {
 
 export const RealmsContext = React.createContext<RealmsContextProps>({
     state: {
+        state: State.LOADING,
         realms: []
     },
     actions: {
