@@ -6,5 +6,5 @@ This project uses [Localstack](https://localstack.cloud/) to mock some of the AW
 
 To run project dependencies localy just execute:
 ```
-docker-compose up
+docker compose up
 ```
