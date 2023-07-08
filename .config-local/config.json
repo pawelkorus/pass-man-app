@@ -1,0 +1,12 @@
+{
+    "clientIdSecret": {
+        "clientId": "test",
+        "clientSecret": "test"
+    },
+    "source": {
+        "endpoint": "http://localhost:4566",
+        "bucket": "test",
+        "object": "test.csv",
+        "region": "eu-central-1"
+    }
+}
