@@ -43,20 +43,16 @@ export default ({}:Props):JSX.Element => {
         setFilter(event.target.value)
     }
 
-    function matchFilter(item:RealmDefinition):boolean {
-        if(item.realm?.indexOf(filter) > -1) {
+    function matchFilter(item:RealmDefinition) {
+        if(filter == '') {
             return true
         }
 
-        if(item.tags.filter(t => t.indexOf(filter) > -1).length > 0) {
-            return true
-        }
+        var filterLowerCase = filter.toLowerCase()
+        var realmLowerCase = item.realm.toLowerCase()
+        var tagsLowerCase = item.tags.map(tag => tag.toLowerCase()).join()
 
-        if(!item.persisted) {
-            return true
-        }
-
-        return false
+        return realmLowerCase.includes(filterLowerCase) || tagsLowerCase.includes(filterLowerCase)
     }
 
     var content = (<div className="mx-auto my-auto">
