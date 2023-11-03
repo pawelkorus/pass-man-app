@@ -13,11 +13,8 @@ services:
       - SERVICES=s3
       - EXTRA_CORS_ALLOWED_ORIGINS=https://localhost:8080
       - DEBUG=${DEBUG-}
-      - DATA_DIR=${DATA_DIR-}
-      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
-      - HOST_TMP_FOLDER=${TMPDIR:-/tmp/}localstack
       - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
-      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - "${LOCALSTACK_VOLUME_DIR:-/tmp}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
-      - ./localstack:/docker-entrypoint-initaws.d
+      - ./localstack:/etc/localstack/init/ready.d
