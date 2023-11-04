@@ -1,5 +1,5 @@
 import React from 'react';
-import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Nav, Spinner} from 'react-bootstrap'
+import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Spinner, Container} from 'react-bootstrap'
 import RealmList from './RealmList'
 import { v4 as uuidv4 } from 'uuid'
 import { useRealms, RealmDefinition, State } from './api' 
@@ -77,31 +77,30 @@ export default ({}:Props):JSX.Element => {
     }
 
     return (
-<div className="container-fluid h-100 d-flex flex-column">
-    <Navbar expand="md" className="bg-light justify-content-between">
-        <div className="container">
-            <Navbar.Brand href="#">pass-man</Navbar.Brand>
+<div className="d-flex flex-column w-100 h-100">
+    <Navbar bg="light" expand="md">
+        <Container fluid="md">
+            <Navbar.Brand href="#">
+                pass-man
+            </Navbar.Brand>
+
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
             <Navbar.Collapse id="basic-navbar-nav">
-                <Nav>
-                </Nav>
-                <Form className="flex-grow-1">
-                    <InputGroup className="mx-auto w-75">
-                        <FormControl placeholder="Search..." aria-label="Search" aria-describedby="basic-addon1" onChange={ handleFilterChanged }/>
+                <Form className="flex-fill">
+                    <InputGroup className="mb-1 mt-1 mb-md-0 mt-md-0">
+                        <FormControl type="search" placeholder="Search..." className="" aria-label="Search" onChange={ handleFilterChanged } />
                         <InputGroup.Text className="bg-transparent"><i className="fa fa-search"></i></InputGroup.Text>
                     </InputGroup>
                 </Form>
-                <Form>
-                    <ButtonGroup>
-                        <Button onClick={ handleAddBtnOnClick }><i className="fas fa-plus"></i></Button>
-                        <Button onClick={ handleSaveOnClick }><i className="fas fa-cloud-upload-alt"></i></Button>
-                    </ButtonGroup>
-                </Form>
+                <ButtonGroup className="ms-0 ms-md-1">
+                    <Button onClick={ handleAddBtnOnClick }><i className="fas fa-plus"></i></Button>
+                    <Button onClick={ handleSaveOnClick }><i className="fas fa-cloud-upload-alt"></i></Button>
+                </ButtonGroup>
             </Navbar.Collapse>
-        </div>
+        </Container>
     </Navbar>
 
     {content}
 </div>
-    )
-}
+)}
