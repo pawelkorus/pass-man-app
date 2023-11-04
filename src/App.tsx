@@ -55,29 +55,29 @@ export default ({}:Props):JSX.Element => {
         return realmLowerCase.includes(filterLowerCase) || tagsLowerCase.includes(filterLowerCase)
     }
 
-    var content = (<div className="mx-auto my-auto">
-            <Spinner animation="border" role="status">
-                <span className="sr-only">Loading...</span>
-            </Spinner>
-        </div>
+    var content = (
+<div className="d-flex flex-column w-100 h-100">
+    <div className="mx-auto my-auto">
+        <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+        </Spinner>
+    </div>
+</div>
     )
 
     if(realmsContext.state.state == State.SAVING) {
-        content = (<div className="mx-auto my-auto">
-                <Spinner animation="border" role="status">
-                    <span className="sr-only">Saving...</span>
-                </Spinner>
-            </div>
+        content = (
+<div className="d-flex flex-column w-100 h-100">
+    <div className="mx-auto my-auto">
+        <Spinner animation="border" role="status">
+            <span className="sr-only">Saving...</span>
+        </Spinner>
+    </div>
+</div>
         )
     } else if(realmsContext.state.state == State.READY) {
-        content = (<RealmList    items={ realmsContext.state.realms.filter(matchFilter) }
-            onItemRemoved={handleItemRemoved} 
-            onItemChanged={handleItemChanged}></RealmList>
-        )
-    }
-
-    return (
-<div className="d-flex flex-column w-100 h-100">
+        content = (
+<>
     <Navbar bg="light" expand="md">
         <Container fluid="md">
             <Navbar.Brand href="#">
@@ -101,6 +101,12 @@ export default ({}:Props):JSX.Element => {
         </Container>
     </Navbar>
 
-    {content}
-</div>
-)}
+    <RealmList
+        items={ realmsContext.state.realms.filter(matchFilter) }
+        onItemRemoved={handleItemRemoved} 
+        onItemChanged={handleItemChanged}></RealmList>
+</>
+        )}
+
+    return content
+}
