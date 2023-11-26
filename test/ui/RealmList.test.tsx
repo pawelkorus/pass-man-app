@@ -1,8 +1,7 @@
-import { unmountComponentAtNode } from 'react-dom'
 import { render, screen } from "@testing-library/react";
-import RealmList from "../src/RealmList"
+import { RealmList } from "../../src/ui"
 import React from 'react';
-import { RealmDefinition } from '../src/api'
+import { RealmDefinition } from '../../src/api'
 
 it("should render empty RealmList", () => {
 

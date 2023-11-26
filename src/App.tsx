@@ -1,6 +1,6 @@
 import React from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Spinner, Container} from 'react-bootstrap'
-import RealmList from './RealmList'
+import { RealmList } from './ui'
 import { v4 as uuidv4 } from 'uuid'
 import { useRealms, RealmDefinition, State } from './api' 
 

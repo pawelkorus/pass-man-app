@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container } from 'react-bootstrap'
-import { RealmDefinition } from './api'
+import { RealmDefinition } from '../api'
 import RealmListItem from './RealmListItem'
 
 type Props = {
