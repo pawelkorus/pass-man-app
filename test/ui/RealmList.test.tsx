@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { RealmList } from "../../src/ui"
+import  RealmList from "../../src/ui/RealmList"
 import React from 'react';
 import { RealmDefinition } from '../../src/api'
 
