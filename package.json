@@ -45,8 +45,8 @@
     "develop-debug": "webpack serve --mode development --config webpack.js",
     "develop-local": "webpack serve --mode development --env local --config webpack.js",
     "test": "jest",
-    "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix",
+    "lint": "eslint .",
+    "lint-and-fix": "eslint . --fix",
     "update-deps": "ncu -u"
   },
   "dependencies": {
