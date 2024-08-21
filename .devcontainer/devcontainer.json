@@ -16,12 +16,10 @@
 		"vscode": {
 			"extensions": [
 				"EditorConfig.EditorConfig",
-				"eamodio.gitlens",
-				"GitHub.copilot",
-				"GitHub.copilot-chat"
+				"dbaeumer.vscode-eslint"
 			]
 		}
-	},
+	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "yarn install",
