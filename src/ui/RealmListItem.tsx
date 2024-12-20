@@ -10,7 +10,7 @@ type Props = {
     onItemRemoved?:(item:RealmDefinition) => void
 }
 
-export default (props:Props):JSX.Element => {
+export default (props:Props):React.ReactElement => {
     const [editEnabled, setEditEnabled] = useState(false)
 
     function handleItemChanged(field: keyof RealmDefinition, item:RealmDefinition, newValue:string|string[]) {

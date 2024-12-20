@@ -7,7 +7,7 @@ import { useRealms, RealmDefinition, State } from './api'
 type Props = {
 }
 
-export default ({}:Props):JSX.Element => {
+export default ({}:Props):React.ReactElement => {
     var [filter, setFilter] = React.useState('')
     var realmsContext = useRealms()
 
