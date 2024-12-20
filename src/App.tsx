@@ -12,10 +12,8 @@ export default ({}:Props):React.ReactElement => {
     const [filter, setFilter] = useState('')
     const realmsContext = useRealms()
     const currentsState = useRef(realmsContext.state.state)
-    console.log('render', Date.now(), currentsState.current)
-
+    
     useEffect(() => {
-        console.log(currentsState.current, realmsContext.state.state)
         const wasSaving = currentsState.current == State.SAVING
         const savingFinished = realmsContext.state.state == State.READY
         if(wasSaving && savingFinished) setHasPendingChanges(false)
