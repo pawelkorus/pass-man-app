@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {Navbar, Form, InputGroup, FormControl, Button, ButtonGroup, Spinner, Container} from 'react-bootstrap'
 import { RealmList } from './ui'
 import { v4 as uuidv4 } from 'uuid'
@@ -8,14 +8,23 @@ type Props = {
 }
 
 export default ({}:Props):React.ReactElement => {
-    var [filter, setFilter] = React.useState('')
-    var realmsContext = useRealms()
+    const [hasPendingChanges, setHasPendingChanges] = useState(false)
+    const [filter, setFilter] = useState('')
+    const realmsContext = useRealms()
+    const currentsState = useRef(realmsContext.state.state)
+    console.log('render', Date.now(), currentsState.current)
+
+    useEffect(() => {
+        console.log(currentsState.current, realmsContext.state.state)
+        const wasSaving = currentsState.current == State.SAVING
+        const savingFinished = realmsContext.state.state == State.READY
+        if(wasSaving && savingFinished) setHasPendingChanges(false)
+        currentsState.current = realmsContext.state.state
+    }, [realmsContext.state.state])
 
     function handleSaveOnClick(e:React.MouseEvent) {
         e.preventDefault();
-        // setState((cur, propse):State => { State.SAVING } ,   )
         realmsContext.actions.pushRealms()
-        // setState(State.READY)
     }
 
     function handleAddBtnOnClick(e:React.MouseEvent) {
@@ -33,10 +42,12 @@ export default ({}:Props):React.ReactElement => {
 
     function handleItemRemoved(removedItem:RealmDefinition) {
         realmsContext.actions.removeRealm(removedItem)
+        setHasPendingChanges(true)
     }
 
     function handleItemChanged(changedItem:RealmDefinition) {   
         realmsContext.actions.updateRealm(changedItem)
+        setHasPendingChanges(true)
     }
 
     function handleFilterChanged(event:React.ChangeEvent<HTMLInputElement>) {
@@ -95,7 +106,14 @@ export default ({}:Props):React.ReactElement => {
                 </Form>
                 <ButtonGroup className="ms-0 ms-md-1">
                     <Button onClick={ handleAddBtnOnClick }><i className="fas fa-plus"></i></Button>
-                    <Button onClick={ handleSaveOnClick }><i className="fas fa-cloud-upload-alt"></i></Button>
+                    <Button onClick={ handleSaveOnClick }>
+                        <i className="fas fa-cloud-upload-alt"></i>
+                        { hasPendingChanges && (
+                        <span className="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                            <span className="visually-hidden">Unsaved changes</span>
+                        </span>
+                        )}
+                    </Button>
                 </ButtonGroup>
             </Navbar.Collapse>
         </Container>
