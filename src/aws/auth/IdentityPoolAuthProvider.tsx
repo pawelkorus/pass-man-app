@@ -1,5 +1,5 @@
 import React from 'react'
-import { Credentials } from "@aws-sdk/types";
+import { AwsCredentialIdentity } from "@aws-sdk/types";
 import { fromCognitoIdentityPool } from "@aws-sdk/credential-providers"
 import { createOIDCClient, ErrorResult, IdTokenResult, IssuerConfig } from "../../oauth2";
 import { ConfigContext, AuthContext, Config } from "../../api"
@@ -34,7 +34,7 @@ function validateIdentityPoolAuthConfig(config:Config):config is IdentityPoolAut
     })
 }
 
-function validateType<T>(data:any, schema:Record<keyof T, string>, ): data is T {  
+function validateType<T>(data:any, schema:Record<keyof T, string>, ): data is T {
     const missingProperties = Object.keys(schema)
         .filter(key => data[key] === undefined)
         .map(key => key as keyof T)
@@ -50,15 +50,15 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
 
     const authenticate = async () => {
         const config = configContext.state.config
-        
+
         if(!config) {
             return //skip
         }
-        
+
         if(!validateIdentityPoolAuthConfig(config)) {
             throw new Error("Invalid configuration. Required properties not found")
         }
-        
+
         const options = config.cognito
         const client = await createOIDCClient(options.issuer)
         const authorizationRequest = {
@@ -67,7 +67,7 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
             scope: "openid"
         }
         const issuerUrl = new URL(client.issuer)
-        
+
         let result:IdTokenResult | ErrorResult
         if(options.grantType == "token") {
             result = await client.implicitFlow(authorizationRequest)
@@ -100,7 +100,7 @@ export function IdentityPoolAuthProvider({children}:IdentityPoolAuthProviderProp
     </AuthContext.Provider>
 }
 
-function toAuthentication(token:IdToken, credentials:Credentials):AWSAuthentication {
+function toAuthentication(token:IdToken, credentials:AwsCredentialIdentity):AWSAuthentication {
     return {
         principal: token.sub || "",
         ...credentials

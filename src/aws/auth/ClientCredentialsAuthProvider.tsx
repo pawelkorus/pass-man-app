@@ -1,10 +1,10 @@
 import React from 'react'
-import { Credentials, Provider } from "@aws-sdk/types";
+import { AwsCredentialIdentity, Provider } from "@aws-sdk/types";
 import { Config, ConfigContext, AuthContext } from '../../api'
 import { AWSAuthentication } from '..';
 
 export type ClientIdSecretConfig = Config & {
-    clientIdSecret: ClientIdSecretProperties 
+    clientIdSecret: ClientIdSecretProperties
 }
 
 export function ClientCredentialsAuthProvider({children}:ClientCredentialsAuthProviderProps) {
@@ -14,15 +14,15 @@ export function ClientCredentialsAuthProvider({children}:ClientCredentialsAuthPr
 
     const authenticate = async () => {
         const config = configContext.state.config
-        
+
         if(!configContext.state.config) {
             return //skip
         }
-        
+
         if(!isClientIdSecretConfig(config)) {
             throw new Error("Invalid configuration. Required properties not found")
         }
-        
+
         const credentials = await authenticateClientIdClientSecret(config.clientIdSecret)()
         setCredentials(toAuthentication(config.clientIdSecret.clientId, credentials))
         setLoading(false)
@@ -46,7 +46,7 @@ type ClientIdSecretProperties = {
     clientSecret: string
 }
 
-function toAuthentication(clientId:string, credentials:Credentials):AWSAuthentication {
+function toAuthentication(clientId:string, credentials:AwsCredentialIdentity):AWSAuthentication {
     return {
         principal: clientId,
         ...credentials
@@ -55,11 +55,11 @@ function toAuthentication(clientId:string, credentials:Credentials):AWSAuthentic
 
 function isClientIdSecretConfig(config:Config):config is ClientIdSecretConfig {
     const clientIdSecretProperties = (config as ClientIdSecretConfig).clientIdSecret
-    return clientIdSecretProperties?.clientId !== undefined 
+    return clientIdSecretProperties?.clientId !== undefined
         && clientIdSecretProperties?.clientSecret !== undefined
 }
 
-function authenticateClientIdClientSecret(credentials:ClientIdSecretProperties):Provider<Credentials> {  
+function authenticateClientIdClientSecret(credentials:ClientIdSecretProperties):Provider<AwsCredentialIdentity> {
     return () => Promise.resolve({
                     accessKeyId: credentials.clientId,
                     secretAccessKey: credentials.clientSecret
