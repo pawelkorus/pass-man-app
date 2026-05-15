@@ -3,15 +3,15 @@
 {
   "name": "pass-man-app",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22-bookworm",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    // "ghcr.io/devcontainers/features/docker-in-docker:2": {},
     "ghcr.io/devcontainers/features/aws-cli:1": {}
   },
 
   "mounts": [
-    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws-devcontainer,target=/.aws,type=bind"
+    // "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws-devcontainer,target=/.aws,type=bind"
   ],
 
   "containerEnv": {
@@ -20,7 +20,7 @@
   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
-    8080
+    // 8080
   ],
   "customizations": {
     "vscode": {
