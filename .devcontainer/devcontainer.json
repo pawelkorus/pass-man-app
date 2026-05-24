@@ -12,7 +12,7 @@
   },
 
   "mounts": [
-    // "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws-devcontainer,target=/.aws,type=bind"
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/.aws-devcontainer,target=/.aws,type=bind"
   ],
 
   "containerEnv": {
